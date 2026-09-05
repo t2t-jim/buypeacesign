@@ -175,7 +175,6 @@ pwa-app/
     lib/waitlist.ts # contract + validators (prep kit)
   data/waitlist.jsonl
   README.md
-
 ```
 
 ---
