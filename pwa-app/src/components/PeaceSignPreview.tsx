@@ -2,7 +2,7 @@
 
 /**
  * Live peace-sign light preview. Soft neon bloom using `hex`.
- * Lifted from prep/stubs/PeaceSignPreview.tsx.
+ * `monument` — landing hero: larger stage + dual teal/violet bloom.
  */
 
 export type PeaceSignPreviewProps = {
@@ -10,6 +10,8 @@ export type PeaceSignPreviewProps = {
   sizeLabel?: string;
   className?: string;
   sticky?: boolean;
+  /** Larger size + teal-left / violet-right layered glow (landing hero). */
+  monument?: boolean;
 };
 
 export function PeaceSignPreview({
@@ -17,15 +19,21 @@ export function PeaceSignPreview({
   sizeLabel,
   className,
   sticky = false,
+  monument = false,
 }: PeaceSignPreviewProps) {
   const glow = hex || "#FFFFFF";
   const classes = [
     "peace-preview",
     sticky ? "peace-preview--sticky" : "",
+    monument ? "peace-preview--monument" : "",
     className ?? "",
   ]
     .filter(Boolean)
     .join(" ");
+
+  const svgFilter = monument
+    ? undefined
+    : `drop-shadow(0 0 12px ${glow}) drop-shadow(0 0 28px ${glow})`;
 
   return (
     <div
@@ -34,13 +42,17 @@ export function PeaceSignPreview({
       role="img"
       aria-label="Peace sign light preview"
     >
+      {monument ? (
+        <>
+          <span className="peace-preview__bloom peace-preview__bloom--teal" aria-hidden />
+          <span className="peace-preview__bloom peace-preview__bloom--violet" aria-hidden />
+        </>
+      ) : null}
       <svg
         viewBox="0 0 200 200"
         width="100%"
         aria-hidden
-        style={{
-          filter: `drop-shadow(0 0 12px ${glow}) drop-shadow(0 0 28px ${glow})`,
-        }}
+        style={svgFilter ? { filter: svgFilter } : undefined}
       >
         <circle
           cx="100"

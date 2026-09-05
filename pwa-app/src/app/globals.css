@@ -1,7 +1,7 @@
 :root {
-  --bg: #0b0b14;
-  --bg-elevated: #12121f;
-  --bg-card: #161628;
+  --bg: #07080F;
+  --bg-elevated: #0e101a;
+  --bg-card: rgba(18, 20, 34, 0.72);
   --text: #f4f4f8;
   --text-muted: #a8a8bc;
   --teal: #2ee6c5;
@@ -9,9 +9,12 @@
   --accent-grad: linear-gradient(135deg, #2ee6c5 0%, #7c6cf0 50%, #c4a1ff 100%);
   --ring: rgba(46, 230, 197, 0.55);
   --border: rgba(255, 255, 255, 0.08);
+  --glow-teal: rgba(46, 230, 197, 0.45);
+  --glow-violet: rgba(167, 139, 250, 0.4);
   --danger: #ff8b8b;
-  --radius: 14px;
-  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --radius: 16px;
+  --font: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display-family: var(--font-display), ui-serif, Georgia, "Times New Roman", serif;
 }
 
 *,
@@ -54,6 +57,12 @@ input {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -8%, rgba(46, 230, 197, 0.07), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 85% 20%, rgba(167, 139, 250, 0.08), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 10% 30%, rgba(46, 230, 197, 0.05), transparent 45%),
+    radial-gradient(ellipse 120% 80% at 50% 100%, rgba(0, 0, 0, 0.55), transparent 60%),
+    var(--bg);
 }
 
 .main {
@@ -61,7 +70,7 @@ input {
   width: 100%;
   max-width: 640px;
   margin: 0 auto;
-  padding: 1rem 1.1rem 2.5rem;
+  padding: 1.15rem 1.15rem 3rem;
 }
 
 /* —— Header —— */
@@ -73,10 +82,12 @@ input {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.75rem 1.1rem;
-  background: rgba(11, 11, 20, 0.88);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
+  padding: 0.8rem 1.15rem;
+  background: rgba(7, 8, 15, 0.78);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 0 rgba(46, 230, 197, 0.04);
 }
 
 .site-header__brand {
@@ -96,43 +107,57 @@ input {
   height: 40px;
   border-radius: 10px;
   object-fit: cover;
-  box-shadow: 0 0 18px rgba(46, 230, 197, 0.25);
+  box-shadow:
+    0 0 14px rgba(46, 230, 197, 0.35),
+    0 0 28px rgba(167, 139, 250, 0.2);
 }
 .site-header__signin {
   color: var(--text-muted);
   font-size: 0.9rem;
+}
+.site-header__signin:hover {
+  color: var(--teal);
+  text-decoration: none;
 }
 
 /* —— Landing —— */
 .hero {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding-top: 0.5rem;
+  gap: 1.35rem;
+  padding-top: 0.35rem;
 }
 
-.hero__preview {
+.hero__monument {
   display: flex;
   justify-content: center;
-  padding: 1.25rem 0 0.5rem;
+  align-items: center;
+  position: relative;
+  padding: 1.75rem 0 1rem;
+  margin: 0 -0.5rem;
+  min-height: min(52vw, 320px);
 }
 
+.hero__title,
 .hero h1 {
   margin: 0;
-  font-size: clamp(1.85rem, 6vw, 2.35rem);
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  background: var(--accent-grad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-family: var(--font-display-family);
+  font-size: clamp(2rem, 7vw, 2.75rem);
+  font-weight: 550;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
 }
 
 .hero__sub {
   margin: 0;
   color: var(--text-muted);
-  line-height: 1.55;
-  font-size: 1.02rem;
+  line-height: 1.6;
+  font-size: 1.05rem;
+  max-width: 36em;
 }
 
 .trust-chips {
@@ -145,32 +170,106 @@ input {
 }
 .trust-chips li {
   font-size: 0.78rem;
-  padding: 0.35rem 0.65rem;
+  padding: 0.38rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(14, 16, 26, 0.75);
   color: var(--text-muted);
+  backdrop-filter: blur(8px);
 }
 
+/* Glass / frosted pre-order card with teal→violet border glow */
 .preorder-card {
-  margin-top: 0.25rem;
-  padding: 1.15rem 1.1rem 1.2rem;
+  margin-top: 0.35rem;
+  padding: 1.3rem 1.2rem 1.35rem;
   border-radius: calc(var(--radius) + 4px);
   background:
-    linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-    var(--accent-grad) border-box;
+    linear-gradient(rgba(16, 18, 30, 0.82), rgba(14, 16, 26, 0.88)) padding-box,
+    linear-gradient(135deg, rgba(46, 230, 197, 0.55), rgba(124, 108, 240, 0.55), rgba(196, 161, 255, 0.4)) border-box;
   border: 1.5px solid transparent;
-  box-shadow: 0 0 40px rgba(124, 108, 240, 0.18);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+    0 0 48px rgba(46, 230, 197, 0.12),
+    0 0 64px rgba(124, 108, 240, 0.14),
+    0 20px 48px rgba(0, 0, 0, 0.35);
+}
+
+.social-proof {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(14, 16, 26, 0.55);
+  backdrop-filter: blur(10px);
+}
+
+.social-proof__avatars {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.social-proof__dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+  margin-left: -8px;
+  background: linear-gradient(145deg, #2ee6c5, #7c6cf0);
+  opacity: 0.85;
+}
+.social-proof__dot:first-child {
+  margin-left: 0;
+  background: linear-gradient(145deg, #3af0d0, #2ee6c5);
+}
+.social-proof__dot:nth-child(2) {
+  background: linear-gradient(145deg, #5ce0d0, #8b7cf5);
+}
+.social-proof__dot:nth-child(3) {
+  background: linear-gradient(145deg, #8b7cf5, #a78bfa);
+}
+.social-proof__dot:nth-child(4) {
+  background: linear-gradient(145deg, #a78bfa, #c4a1ff);
+  opacity: 0.7;
+}
+
+.social-proof__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.social-proof__text strong {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.social-proof__text span {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.35;
 }
 
 .secondary-link {
   display: inline-block;
-  margin-top: 0.35rem;
+  margin-top: 0.15rem;
   font-size: 0.95rem;
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 550;
+}
+.secondary-link:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--teal);
 }
 
 .footer-micro {
-  margin-top: 2rem;
+  margin-top: 2.25rem;
   text-align: center;
   color: var(--text-muted);
   font-size: 0.85rem;
@@ -185,6 +284,9 @@ input {
 .preorder-form h2 {
   margin: 0;
   font-size: 1.25rem;
+  font-family: var(--font-display-family);
+  font-weight: 550;
+  color: var(--text);
 }
 .preorder-form > p {
   margin: 0;
@@ -204,7 +306,7 @@ input {
   padding: 0.72rem 0.85rem;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: rgba(7, 8, 15, 0.65);
   color: var(--text);
   outline: none;
 }
@@ -238,7 +340,7 @@ input {
   padding: 0.45rem 0.7rem;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: rgba(7, 8, 15, 0.55);
   cursor: pointer;
   color: var(--text);
   font-size: 0.88rem;
@@ -255,12 +357,14 @@ input {
   appearance: none;
   border: none;
   cursor: pointer;
-  padding: 0.85rem 1.1rem;
+  padding: 0.9rem 1.15rem;
   border-radius: 12px;
   font-weight: 650;
-  color: #0b0b14;
+  color: #07080F;
   background: var(--accent-grad);
-  box-shadow: 0 8px 28px rgba(46, 230, 197, 0.22);
+  box-shadow:
+    0 8px 28px rgba(46, 230, 197, 0.22),
+    0 4px 16px rgba(124, 108, 240, 0.18);
 }
 .btn-primary:disabled {
   opacity: 0.55;
@@ -321,9 +425,11 @@ input {
 
 /* —— Preview —— */
 .peace-preview {
+  position: relative;
   width: min(240px, 70vw);
   margin: 0 auto;
   text-align: center;
+  z-index: 1;
 }
 .peace-preview p {
   margin: 0.5rem 0 0;
@@ -338,6 +444,44 @@ input {
   background: linear-gradient(180deg, var(--bg) 70%, transparent);
 }
 
+/* Monument-scale landing preview + dual bloom */
+.peace-preview--monument {
+  width: min(340px, 82vw);
+  isolation: isolate;
+}
+.peace-preview--monument svg {
+  position: relative;
+  z-index: 2;
+  filter:
+    drop-shadow(0 0 10px rgba(255, 255, 255, 0.55))
+    drop-shadow(0 0 22px rgba(46, 230, 197, 0.45))
+    drop-shadow(0 0 36px rgba(167, 139, 250, 0.35));
+}
+
+.peace-preview__bloom {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(40px);
+}
+.peace-preview__bloom--teal {
+  width: 58%;
+  height: 58%;
+  left: -6%;
+  top: 18%;
+  background: radial-gradient(circle, var(--glow-teal) 0%, transparent 70%);
+  opacity: 0.85;
+}
+.peace-preview__bloom--violet {
+  width: 62%;
+  height: 62%;
+  right: -8%;
+  top: 12%;
+  background: radial-gradient(circle, var(--glow-violet) 0%, transparent 70%);
+  opacity: 0.8;
+}
+
 /* —— Configure —— */
 .configure {
   display: flex;
@@ -349,6 +493,8 @@ input {
 .review-card h1 {
   margin: 0 0 0.35rem;
   font-size: 1.35rem;
+  font-family: var(--font-display-family);
+  font-weight: 550;
 }
 .size-picker > p,
 .color-config > p {
@@ -365,7 +511,7 @@ input {
   padding: 1rem;
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  background: var(--bg-card);
+  background: rgba(16, 18, 30, 0.75);
   color: var(--text);
   cursor: pointer;
   display: flex;
@@ -375,7 +521,7 @@ input {
 .size-option[aria-checked="true"] {
   border-color: transparent;
   background:
-    linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+    linear-gradient(rgba(16, 18, 30, 0.9), rgba(16, 18, 30, 0.9)) padding-box,
     var(--accent-grad) border-box;
   border: 1.5px solid transparent;
   box-shadow: 0 0 24px rgba(46, 230, 197, 0.15);
@@ -425,7 +571,7 @@ input {
   padding: 0.72rem 0.85rem;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: rgba(7, 8, 15, 0.65);
   color: var(--text);
   outline: none;
   max-width: 180px;
@@ -442,8 +588,9 @@ input {
 .review-card {
   padding: 1.1rem;
   border-radius: var(--radius);
-  background: var(--bg-card);
+  background: rgba(16, 18, 30, 0.75);
   border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
 }
 .review-summary {
   list-style: none;
@@ -472,6 +619,8 @@ input {
 .page-title {
   margin: 0 0 0.5rem;
   font-size: 1.5rem;
+  font-family: var(--font-display-family);
+  font-weight: 550;
 }
 .page-body {
   color: var(--text-muted);

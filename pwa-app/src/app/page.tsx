@@ -13,10 +13,10 @@ export default function LandingPage() {
 
   return (
     <div className="hero">
-      <div className="hero__preview">
-        <PeaceSignPreview hex={DEFAULT_HEX} />
+      <div className="hero__monument">
+        <PeaceSignPreview hex={DEFAULT_HEX} monument />
       </div>
-      <h1>{copy.landing.h1}</h1>
+      <h1 className="hero__title">{copy.landing.h1}</h1>
       <p className="hero__sub">{copy.landing.sub}</p>
       <ul className="trust-chips">
         {copy.landing.trustChips.map((chip) => (
@@ -30,6 +30,18 @@ export default function LandingPage() {
         />
       </div>
       <InstallPrompt show={submitted} />
+      <div className="social-proof" aria-label={copy.landing.socialProof.label}>
+        <div className="social-proof__avatars" aria-hidden>
+          <span className="social-proof__dot" />
+          <span className="social-proof__dot" />
+          <span className="social-proof__dot" />
+          <span className="social-proof__dot" />
+        </div>
+        <div className="social-proof__text">
+          <strong>{copy.landing.socialProof.label}</strong>
+          <span>{copy.landing.socialProof.detail}</span>
+        </div>
+      </div>
       <Link href="/configure" className="secondary-link">
         {copy.landing.secondaryCta}
       </Link>

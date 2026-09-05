@@ -11,7 +11,7 @@ export const copy = {
 
   landing: {
     h1: "Light that says peace.",
-    sub: "Custom outdoor peace-sign lights in 36\" and 48\". We’re opening pre-orders — claim early access before they ship.",
+    sub: "Custom outdoor peace-sign lights in 36\" and 48\". Early access is open — claim your place before they ship.",
     preorderCard: {
       title: "Pre-order yours today",
       helper:
@@ -29,6 +29,11 @@ export const copy = {
       "AC powered (solar coming)",
       "Early access",
     ],
+    /** Honest early-access framing — never invent subscriber counts. */
+    socialProof: {
+      label: "Early access is open",
+      detail: "Be among the first to light up your porch.",
+    },
     footerMicro: "Made for porches, patios, and quiet nights outside.",
   },
 
