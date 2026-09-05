@@ -34,7 +34,7 @@ export const copy = {
       label: "Early access is open",
       detail: "Be among the first to light up your porch.",
     },
-    footerMicro: "Made for porches, patios, and quiet nights outside.",
+    footerMicro: "Made to replace those ugly wreaths on the outside of your home!",
   },
 
   configure: {
