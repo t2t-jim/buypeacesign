@@ -1,9 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
 import { copy } from "@/content/copy";
 
 /**
- * Top bar: Logo A + BuyPeaceSign wordmark + Blog + optional Sign in (stub).
+ * Top bar: clean circular Logo A + premium wordmark + Blog + optional Sign in.
+ * Bright-luxury Estate Glow — no neon plate, no tails.
  */
 
 export type SiteHeaderProps = {
@@ -11,18 +11,47 @@ export type SiteHeaderProps = {
   className?: string;
 };
 
+function LogoAMark({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 64 64"
+      width={32}
+      height={32}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <circle
+        cx="32"
+        cy="32"
+        r="21.5"
+        stroke="currentColor"
+        strokeWidth="3.75"
+        strokeLinecap="round"
+      />
+      <path
+        d="M32 11V53M32 32L18.2 49.2M32 32L45.8 49.2"
+        stroke="currentColor"
+        strokeWidth="3.75"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export function SiteHeader({ showSignIn = true, className }: SiteHeaderProps) {
   return (
     <header className={`site-header${className ? ` ${className}` : ""}`}>
       <Link href="/" className="site-header__brand">
-        <Image
-          src="/brand/logo-a-neon-glow.png"
-          alt=""
-          width={40}
-          height={40}
-          priority
-        />
-        <span>{copy.brand.wordmark}</span>
+        <span className="site-header__mark" aria-hidden>
+          <LogoAMark className="site-header__mark-svg" />
+        </span>
+        <span className="site-header__wordmark">
+          <span className="site-header__wordmark-buy">Buy</span>
+          <span className="site-header__wordmark-peace">PeaceSign</span>
+        </span>
+        <span className="sr-only">{copy.brand.wordmark}</span>
       </Link>
       <nav className="site-header__nav" aria-label="Primary">
         <Link href="/blog" className="site-header__link">
