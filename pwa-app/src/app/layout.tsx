@@ -17,6 +17,7 @@ const sans = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://buypeacesign.com"),
   title: {
     default: "BuyPeaceSign — Light that says peace",
     template: "%s · BuyPeaceSign",
@@ -24,6 +25,47 @@ export const metadata: Metadata = {
   description:
     "Custom outdoor peace-sign lights in 36\" and 48\". Pre-order early access — no charge today.",
   applicationName: "BuyPeaceSign",
+  keywords: [
+    "peace sign light",
+    "outdoor peace sign",
+    "custom LED peace sign",
+    "BuyPeaceSign",
+    "pre-order",
+  ],
+  authors: [{ name: "BuyPeaceSign" }],
+  creator: "BuyPeaceSign",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+  alternates: {
+    canonical: "https://buypeacesign.com",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://buypeacesign.com",
+    siteName: "BuyPeaceSign",
+    title: "BuyPeaceSign — Light that says peace",
+    description:
+      "Custom outdoor peace-sign lights in 36\" and 48\". Pre-order early access — no charge today.",
+    images: [
+      {
+        url: "/brand/logo-a-neon-glow.png",
+        width: 512,
+        height: 512,
+        alt: "BuyPeaceSign neon peace sign logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "BuyPeaceSign — Light that says peace",
+    description:
+      "Custom outdoor peace-sign lights in 36\" and 48\". Pre-order early access — no charge today.",
+    images: ["/brand/logo-a-neon-glow.png"],
+  },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
