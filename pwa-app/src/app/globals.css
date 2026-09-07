@@ -778,11 +778,11 @@ input {
 }
 
 .estate-hero__img {
-  /* Back out MUCH more — house reads smaller in frame, more estate/sky around it */
+  /* Middle crop — between old tight cover and extreme 0.62 pullback */
   object-fit: contain;
   object-position: center center;
-  transform: scale(0.62);
-  transform-origin: center 42%;
+  transform: scale(0.82);
+  transform-origin: center 40%;
 }
 
 .estate-hero__veil {
@@ -806,18 +806,26 @@ input {
   left: 50%;
   /* With object-fit:contain, sign sits nearer vertical center of the full frame */
   top: 40%;
-  transform: translate(-50%, -50%) scale(0.62);
+  transform: translate(-50%, -50%) scale(0.82);
   transform-origin: center center;
-  width: clamp(72px, 12vw, 128px);
-  height: clamp(72px, 12vw, 128px);
+  width: clamp(80px, 13vw, 140px);
+  height: clamp(80px, 13vw, 140px);
   border-radius: 50%;
   z-index: 1;
   pointer-events: none;
-  mix-blend-mode: color;
-  opacity: 0.88;
   /* Tight mask — tint the mark only, no outer decorative ring */
-  -webkit-mask-image: radial-gradient(circle, #000 40%, rgba(0, 0, 0, 0.45) 58%, transparent 72%);
-  mask-image: radial-gradient(circle, #000 40%, rgba(0, 0, 0, 0.45) 58%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle, #000 38%, rgba(0, 0, 0, 0.5) 56%, transparent 72%);
+  mask-image: radial-gradient(circle, #000 38%, rgba(0, 0, 0, 0.5) 56%, transparent 72%);
+}
+
+.estate-hero__facade-tint--color {
+  mix-blend-mode: color;
+  opacity: 1;
+}
+
+.estate-hero__facade-tint--glow {
+  mix-blend-mode: soft-light;
+  opacity: 0.95;
 }
 
 .estate-hero__content {
@@ -966,8 +974,8 @@ input {
   }
   .estate-hero__facade-tint {
     top: 40%;
-    width: clamp(88px, 11vw, 140px);
-    height: clamp(88px, 11vw, 140px);
+    width: clamp(96px, 12vw, 150px);
+    height: clamp(96px, 12vw, 150px);
   }
   .estate-hero__content {
     max-width: 400px;
@@ -997,9 +1005,9 @@ input {
     object-position: center center;
   }
   .estate-hero__facade-tint {
-    top: 41%;
-    width: clamp(68px, 14vw, 110px);
-    height: clamp(68px, 14vw, 110px);
+    top: 40%;
+    width: clamp(76px, 15vw, 120px);
+    height: clamp(76px, 15vw, 120px);
   }
   .btn-primary,
   .preorder-form button,
