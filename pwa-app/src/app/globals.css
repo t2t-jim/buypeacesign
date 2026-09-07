@@ -762,7 +762,7 @@ input {
   position: relative;
   isolation: isolate;
   width: 100%;
-  min-height: min(86dvh, 760px);
+  min-height: min(80dvh, 720px);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -774,46 +774,42 @@ input {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: #07080f; /* night sky when zoomed out */
+  background: #07080f;
 }
 
 .estate-hero__img {
-  /* Middle crop — between old tight cover and extreme 0.62 pullback */
-  object-fit: contain;
-  object-position: center center;
-  transform: scale(0.82);
-  transform-origin: center 40%;
+  /* Mid crop via cover — reliable on iPhone (no contain+scale letterbox quirks) */
+  object-fit: cover;
+  object-position: center 34%;
+  transform: none;
 }
 
 .estate-hero__veil {
   position: absolute;
   inset: 0;
-  /* Minimal veil — house is the splash; faint bottom fade for slim slider only */
   background:
     linear-gradient(
       180deg,
-      rgba(247, 243, 236, 0.04) 0%,
-      rgba(44, 40, 36, 0.06) 48%,
-      rgba(44, 40, 36, 0.18) 78%,
-      rgba(247, 243, 236, 0.38) 100%
+      rgba(247, 243, 236, 0.03) 0%,
+      rgba(44, 40, 36, 0.05) 50%,
+      rgba(44, 40, 36, 0.22) 78%,
+      rgba(247, 243, 236, 0.42) 100%
     );
   pointer-events: none;
+  z-index: 2;
 }
 
-/* Frameless mix-blend tint of the baked on-wall Logo A — no plate, glyph, or frame */
+/* Frameless mix-blend tint of the baked on-wall Logo A — stacked on same spot */
 .estate-hero__facade-tint {
   position: absolute;
   left: 50%;
-  /* With object-fit:contain, sign sits nearer vertical center of the full frame */
-  top: 40%;
-  transform: translate(-50%, -50%) scale(0.82);
-  transform-origin: center center;
-  width: clamp(80px, 13vw, 140px);
-  height: clamp(80px, 13vw, 140px);
+  top: 27%;
+  transform: translate(-50%, -50%);
+  width: clamp(88px, 16vw, 150px);
+  height: clamp(88px, 16vw, 150px);
   border-radius: 50%;
   z-index: 1;
   pointer-events: none;
-  /* Tight mask — tint the mark only, no outer decorative ring */
   -webkit-mask-image: radial-gradient(circle, #000 38%, rgba(0, 0, 0, 0.5) 56%, transparent 72%);
   mask-image: radial-gradient(circle, #000 38%, rgba(0, 0, 0, 0.5) 56%, transparent 72%);
 }
@@ -972,10 +968,13 @@ input {
   .estate-hero {
     min-height: min(88dvh, 820px);
   }
+  .estate-hero__img {
+    object-position: center 36%;
+  }
   .estate-hero__facade-tint {
-    top: 40%;
-    width: clamp(96px, 12vw, 150px);
-    height: clamp(96px, 12vw, 150px);
+    top: 28%;
+    width: clamp(100px, 12vw, 160px);
+    height: clamp(100px, 12vw, 160px);
   }
   .estate-hero__content {
     max-width: 400px;
@@ -1001,13 +1000,22 @@ input {
   .estate-hero {
     min-height: min(82dvh, 700px);
   }
+  .estate-hero {
+    min-height: min(78dvh, 680px);
+  }
   .estate-hero__img {
-    object-position: center center;
+    object-position: center 32%;
   }
   .estate-hero__facade-tint {
-    top: 40%;
-    width: clamp(76px, 15vw, 120px);
-    height: clamp(76px, 15vw, 120px);
+    top: 26%;
+    width: clamp(84px, 20vw, 128px);
+    height: clamp(84px, 20vw, 128px);
+  }
+  .estate-hero__content {
+    padding-bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
+  }
+  .estate-hero__slider {
+    max-width: min(340px, 92vw);
   }
   .btn-primary,
   .preorder-form button,
