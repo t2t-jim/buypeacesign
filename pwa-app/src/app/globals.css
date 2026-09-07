@@ -839,11 +839,11 @@ input {
 .estate-hero__facade-sign {
   position: absolute;
   left: 50%;
-  top: 27%;
+  top: 30%;
   transform: translate(-50%, -50%) scale(0.78);
   transform-origin: center center;
-  width: clamp(88px, 16vw, 150px);
-  height: clamp(88px, 16vw, 150px);
+  width: clamp(72px, 13vw, 120px);
+  height: clamp(72px, 13vw, 120px);
   z-index: 1;
   pointer-events: none;
   overflow: visible;
@@ -1041,7 +1041,7 @@ input {
     object-position: center 36%;
   }
   .estate-hero__facade-sign {
-    top: 28%;
+    top: 30%;
     width: clamp(100px, 12vw, 160px);
     height: clamp(100px, 12vw, 160px);
   }
@@ -1076,7 +1076,7 @@ input {
     object-position: center 32%;
   }
   .estate-hero__facade-sign {
-    top: 26%;
+    top: 29%;
     width: clamp(84px, 20vw, 128px);
     height: clamp(84px, 20vw, 128px);
   }
