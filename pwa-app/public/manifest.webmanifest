@@ -4,8 +4,8 @@
   "description": "Custom outdoor peace-sign lights — pre-order early access.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0B0B14",
-  "theme_color": "#0B0B14",
+  "background_color": "#F7F3EC",
+  "theme_color": "#F7F3EC",
   "orientation": "portrait-primary",
   "icons": [
     {
