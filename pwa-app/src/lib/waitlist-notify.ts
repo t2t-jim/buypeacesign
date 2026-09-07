@@ -31,6 +31,11 @@ export async function sendWaitlistNotifyEmail(
     `Email: ${entry.email}`,
     `First name: ${entry.firstName ?? "(none)"}`,
     `Size interest: ${entry.sizeInterest ?? "(none)"}`,
+    `Custom size (inches): ${
+      entry.customSizeInches !== undefined
+        ? entry.customSizeInches
+        : "(none)"
+    }`,
     `Hex: ${entry.hex ?? "(none)"}`,
     `Source: ${entry.source}`,
     `Created at: ${entry.createdAt}`,

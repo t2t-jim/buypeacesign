@@ -3,15 +3,18 @@
 /**
  * Shared pre-order / early-access form (landing hero + post-configure).
  * Honest copy only — no payment fields.
- * Lifted from prep/stubs/PreorderForm.tsx — wired to copy.ts + /api/waitlist.
+ * Supports preset sizes, custom inches (12–96), or unsure.
  */
 
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 import type { SizeInterest, WaitlistSource } from "@/lib/waitlist";
 import {
+  CUSTOM_SIZE_MAX_INCHES,
+  CUSTOM_SIZE_MIN_INCHES,
   WAITLIST_API_PATH,
   isValidEmail,
   normalizeHex,
+  parseCustomSizeInches,
 } from "@/lib/waitlist";
 import { copy } from "@/content/copy";
 
@@ -20,6 +23,8 @@ export type PreorderFormProps = {
   source?: WaitlistSource;
   mode?: WaitlistSource;
   initialSize?: SizeInterest;
+  /** When initialSize is "custom", optional inches from configure review */
+  initialCustomSizeInches?: number;
   initialHex?: string;
   /** When true (configure path), hide size radio — size already chosen */
   hideSizePicker?: boolean;
@@ -33,6 +38,7 @@ export function PreorderForm({
   source,
   mode,
   initialSize,
+  initialCustomSizeInches,
   initialHex,
   hideSizePicker = false,
   ctaLabel,
@@ -41,11 +47,18 @@ export function PreorderForm({
   className,
 }: PreorderFormProps) {
   const origin: WaitlistSource = source ?? mode ?? "landing";
+  const customInputId = useId();
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [sizeInterest, setSizeInterest] = useState<SizeInterest | "">(
     initialSize ?? "",
   );
+  const [customRaw, setCustomRaw] = useState(
+    initialCustomSizeInches !== undefined
+      ? String(initialCustomSizeInches)
+      : "",
+  );
+  const [customError, setCustomError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [pending, setPending] = useState(false);
@@ -62,13 +75,34 @@ export function PreorderForm({
       ? copy.preorderForm.successConfigure
       : copy.preorderForm.successLanding);
 
+  function resolveCustomInches(): number | undefined {
+    if (sizeInterest !== "custom") return undefined;
+    if (hideSizePicker && initialCustomSizeInches !== undefined) {
+      return parseCustomSizeInches(initialCustomSizeInches);
+    }
+    return parseCustomSizeInches(customRaw);
+  }
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    setCustomError(null);
     if (!isValidEmail(email)) {
       setError(copy.preorderForm.errorEmail);
       return;
     }
+
+    let customSizeInches: number | undefined;
+    if (sizeInterest === "custom") {
+      customSizeInches = resolveCustomInches();
+      if (customSizeInches === undefined) {
+        const msg = copy.preorderForm.customSizeError;
+        setCustomError(msg);
+        setError(msg);
+        return;
+      }
+    }
+
     setPending(true);
     try {
       const res = await fetch(WAITLIST_API_PATH, {
@@ -78,6 +112,7 @@ export function PreorderForm({
           email: email.trim(),
           firstName: firstName.trim() || undefined,
           sizeInterest: sizeInterest || undefined,
+          customSizeInches,
           hex: normalizeHex(initialHex),
           source: origin,
         }),
@@ -149,12 +184,50 @@ export function PreorderForm({
                   name="sizeInterest"
                   value={opt.id}
                   checked={sizeInterest === opt.id}
-                  onChange={() => setSizeInterest(opt.id)}
+                  onChange={() => {
+                    setSizeInterest(opt.id);
+                    setCustomError(null);
+                    setError(null);
+                  }}
                 />
                 {opt.label}
               </label>
             ))}
           </div>
+          {sizeInterest === "custom" ? (
+            <div className="size-custom size-custom--form">
+              <label htmlFor={customInputId} className="size-custom__label">
+                {copy.preorderForm.customSizeLabel}
+              </label>
+              <div className="size-custom__row">
+                <input
+                  id={customInputId}
+                  className="size-custom__input"
+                  name="customSizeInches"
+                  type="number"
+                  inputMode="decimal"
+                  min={CUSTOM_SIZE_MIN_INCHES}
+                  max={CUSTOM_SIZE_MAX_INCHES}
+                  step="1"
+                  value={customRaw}
+                  placeholder={copy.preorderForm.customSizePlaceholder}
+                  aria-invalid={Boolean(customError)}
+                  onChange={(ev) => {
+                    setCustomRaw(ev.target.value);
+                    setCustomError(null);
+                  }}
+                />
+                <span className="size-custom__unit" aria-hidden>
+                  &quot;
+                </span>
+              </div>
+              {customError ? (
+                <p className="form-error size-custom__error" role="alert">
+                  {customError}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
         </fieldset>
       ) : null}
       {normalizedHex ? (

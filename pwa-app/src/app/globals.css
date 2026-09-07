@@ -557,6 +557,70 @@ input {
   color: var(--text-muted);
   font-size: 0.9rem;
 }
+.size-custom {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.size-custom__label {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+.size-custom__row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 12rem;
+}
+.size-custom__input {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0.72rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(7, 8, 15, 0.65);
+  color: var(--text);
+  font-size: 16px;
+  outline: none;
+}
+.size-custom__input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+.size-custom__input[aria-invalid="true"] {
+  border-color: #f87171;
+}
+.size-custom__unit {
+  font-size: 1.15rem;
+  font-weight: 550;
+  color: var(--text);
+  min-width: 1.25rem;
+}
+.size-custom__error {
+  margin: 0;
+}
+.size-custom--form {
+  margin-top: 0.35rem;
+}
+.trust-chips__link {
+  color: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.38rem 0.7rem;
+}
+.trust-chips__link:hover,
+.trust-chips__link:focus-visible {
+  color: var(--text);
+  text-decoration: underline;
+  outline: none;
+}
+.trust-chips li:has(.trust-chips__link) {
+  padding: 0;
+}
 .size-actions,
 .color-actions,
 .review-actions {
@@ -823,9 +887,13 @@ input {
   .btn-primary,
   .preorder-form button,
   .preorder-form input[type="email"],
-  .preorder-form input[type="text"] {
+  .preorder-form input[type="text"],
+  .size-custom__input {
     min-height: 48px;
     font-size: 16px;
+  }
+  .size-option {
+    min-height: 44px;
   }
   .site-header__link,
   .site-header__signin {

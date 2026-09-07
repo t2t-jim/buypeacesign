@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s · BuyPeaceSign",
   },
   description:
-    "Custom outdoor peace-sign lights in 36\" and 48\". Pre-order early access — no charge today.",
+    "Custom outdoor peace-sign lights — 36\", 48\", or any size 12–96\". Pre-order early access — no charge today.",
   applicationName: "BuyPeaceSign",
   keywords: [
     "peace sign light",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     siteName: "BuyPeaceSign",
     title: "BuyPeaceSign — Light that says peace",
     description:
-      "Custom outdoor peace-sign lights in 36\" and 48\". Pre-order early access — no charge today.",
+      "Custom outdoor peace-sign lights — 36\", 48\", or any size 12–96\". Pre-order early access — no charge today.",
     images: [
       {
         url: "/brand/logo-a-neon-glow.png",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "BuyPeaceSign — Light that says peace",
     description:
-      "Custom outdoor peace-sign lights in 36\" and 48\". Pre-order early access — no charge today.",
+      "Custom outdoor peace-sign lights — 36\", 48\", or any size 12–96\". Pre-order early access — no charge today.",
     images: ["/brand/logo-a-neon-glow.png"],
   },
   manifest: "/manifest.webmanifest",

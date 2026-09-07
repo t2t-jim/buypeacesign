@@ -53,7 +53,15 @@ export default function LandingPage() {
             <p className="estate-hero__sub">{copy.landing.sub}</p>
             <ul className="trust-chips estate-hero__chips">
               {copy.landing.trustChips.map((chip) => (
-                <li key={chip}>{chip}</li>
+                <li key={chip.label}>
+                  {"href" in chip && chip.href ? (
+                    <Link href={chip.href} className="trust-chips__link">
+                      {chip.label}
+                    </Link>
+                  ) : (
+                    chip.label
+                  )}
+                </li>
               ))}
             </ul>
           </div>

@@ -25,10 +25,10 @@ export const copy = {
     },
     secondaryCta: "Design yours — pick size & color",
     trustChips: [
-      "36\" & 48\"",
-      "Custom glow",
-      "AC powered (solar coming)",
-      "Early access",
+      { label: "36\", 48\" & custom", href: "/configure" },
+      { label: "Custom glow" },
+      { label: "AC powered (solar coming)" },
+      { label: "Early access" },
     ],
     /** Honest early-access framing — never invent subscriber counts. */
     socialProof: {
@@ -55,7 +55,8 @@ export const copy = {
   configure: {
     size: {
       h1: "Pick your size",
-      helper: "Outdoor decorative peace-sign light. AC powered for v1.",
+      helper:
+        "Outdoor decorative peace-sign light. Choose 36\", 48\", or any custom size from 12\" to 96\". AC powered for v1.",
       options: [
         {
           id: "36",
@@ -68,6 +69,14 @@ export const copy = {
           blurb: "Statement size for larger walls and yards.",
         },
       ],
+      customOption: {
+        id: "custom",
+        label: "Custom size",
+        blurb: "Any diameter from 12\" to 96\".",
+      },
+      customInputLabel: "Size in inches",
+      customInputPlaceholder: "e.g. 42",
+      customError: "Enter a size between 12 and 96 inches.",
       continueCta: "Continue to color",
     },
     color: {
@@ -104,8 +113,12 @@ export const copy = {
     sizeOptions: [
       { id: "36", label: "36\"" },
       { id: "48", label: "48\"" },
+      { id: "custom", label: "Custom" },
       { id: "unsure", label: "Not sure yet" },
     ],
+    customSizeLabel: "Custom size (inches)",
+    customSizePlaceholder: "e.g. 42",
+    customSizeError: "Enter a size between 12 and 96 inches.",
     colorSummaryLabel: "Your color",
     ctaLanding: "Pre-order yours today",
     ctaConfigure: "Pre-order this design",

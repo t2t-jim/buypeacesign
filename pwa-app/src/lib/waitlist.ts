@@ -1,19 +1,25 @@
 /**
  * Waitlist / pre-order interest API contract (market-test v1.1).
- * Aligns with prep/content/copy.ts size ids: "36" | "48" | "unsure".
+ * Size ids: "36" | "48" | "custom" | "unsure".
+ * When sizeInterest is "custom", customSizeInches (12–96) is required.
  * Server should set `createdAt`; client may omit it.
  * Never collect payment fields.
  */
 
 export type WaitlistSource = "landing" | "configure";
 
-export type SizeInterest = "36" | "48" | "unsure";
+export type SizeInterest = "36" | "48" | "custom" | "unsure";
 
 export const SIZE_INTEREST_VALUES: readonly SizeInterest[] = [
   "36",
   "48",
+  "custom",
   "unsure",
 ] as const;
+
+/** Inclusive product-safe custom diameter range (inches). */
+export const CUSTOM_SIZE_MIN_INCHES = 12;
+export const CUSTOM_SIZE_MAX_INCHES = 96;
 
 export type WaitlistEntry = {
   /** Required — early-access key */
@@ -22,6 +28,8 @@ export type WaitlistEntry = {
   firstName?: string;
   /** Optional; prefilled from configure path */
   sizeInterest?: SizeInterest;
+  /** Required when sizeInterest is "custom" — diameter in inches (12–96) */
+  customSizeInches?: number;
   /** Optional custom glow hex, e.g. "#7CB7FF" */
   hex?: string;
   /** Where the signup originated */
@@ -83,6 +91,42 @@ export function isWaitlistSource(value: unknown): value is WaitlistSource {
   return value === "landing" || value === "configure";
 }
 
+/** Parse and validate a custom diameter in inches (12–96 inclusive). */
+export function parseCustomSizeInches(raw: unknown): number | undefined {
+  let n: number;
+  if (typeof raw === "number") {
+    n = raw;
+  } else if (typeof raw === "string" && raw.trim() !== "") {
+    n = Number(raw.trim());
+  } else {
+    return undefined;
+  }
+  if (!Number.isFinite(n) || Number.isNaN(n)) return undefined;
+  if (n < CUSTOM_SIZE_MIN_INCHES || n > CUSTOM_SIZE_MAX_INCHES) {
+    return undefined;
+  }
+  return n;
+}
+
+export function isValidCustomSizeInches(n: number): boolean {
+  return parseCustomSizeInches(n) !== undefined;
+}
+
+/** Human-readable size label for preview / review, e.g. 36" or 42". */
+export function formatSizeLabel(
+  sizeInterest: SizeInterest | undefined,
+  customSizeInches?: number,
+): string | undefined {
+  if (sizeInterest === "36" || sizeInterest === "48") {
+    return `${sizeInterest}"`;
+  }
+  if (sizeInterest === "custom") {
+    const inches = parseCustomSizeInches(customSizeInches);
+    return inches !== undefined ? `${inches}"` : undefined;
+  }
+  return undefined;
+}
+
 /** Validate + normalize a client payload for POST /api/waitlist. */
 export function parseWaitlistCreateInput(
   raw: unknown,
@@ -105,6 +149,7 @@ export function parseWaitlistCreateInput(
       : undefined;
 
   let sizeInterest: SizeInterest | undefined;
+  let customSizeInches: number | undefined;
   if (
     body.sizeInterest !== undefined &&
     body.sizeInterest !== null &&
@@ -114,6 +159,16 @@ export function parseWaitlistCreateInput(
       return { ok: false, error: "Invalid sizeInterest." };
     }
     sizeInterest = body.sizeInterest;
+    if (sizeInterest === "custom") {
+      const inches = parseCustomSizeInches(body.customSizeInches);
+      if (inches === undefined) {
+        return {
+          ok: false,
+          error: `Enter a custom size between ${CUSTOM_SIZE_MIN_INCHES} and ${CUSTOM_SIZE_MAX_INCHES} inches.`,
+        };
+      }
+      customSizeInches = inches;
+    }
   }
 
   const hex =
@@ -128,6 +183,7 @@ export function parseWaitlistCreateInput(
       email,
       firstName,
       sizeInterest,
+      customSizeInches,
       hex,
       source: body.source,
     },
