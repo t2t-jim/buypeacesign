@@ -835,7 +835,7 @@ input {
 }
 
 /* Frameless mix-blend tint of the baked on-wall Logo A — stacked on same spot */
-/* Exact-hex Logo A tubes on facade — no glow/filter/backlight */
+/* Exact-hex Logo A — tube luminosity via SVG filter; wall stays clean */
 .estate-hero__facade-sign {
   position: absolute;
   left: 50%;
@@ -847,6 +847,7 @@ input {
   z-index: 1;
   pointer-events: none;
   overflow: visible;
+  /* no CSS drop-shadow halo on the wall — glow is tube-only SVG filter */
   filter: none;
 }
 
