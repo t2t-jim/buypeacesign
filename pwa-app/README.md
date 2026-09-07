@@ -52,7 +52,7 @@ Prep kit consumed from `BuyPeaceSign/pwa/prep/`:
 
 ---
 
-## Waitlist API (demo)
+## Waitlist API (durable + email)
 
 `POST /api/waitlist` accepts JSON:
 
@@ -67,21 +67,40 @@ Prep kit consumed from `BuyPeaceSign/pwa/prep/`:
 ```
 
 - Validates email; sets `createdAt` server-side.
-- Appends JSON lines to **`data/waitlist.jsonl`** when the filesystem allows.
-- Also keeps an in-memory list for the running process.
-- On read-only hosts (some serverless), falls back to `/tmp` then memory-only.
+- **Persists** to Upstash Redis / Vercel KV list `waitlist:entries` (required — returns 500 if unset).
+- **Emails** `WAITLIST_NOTIFY_TO` (default `searchjim@gmail.com`) via Resend after a successful save (best-effort; signup still succeeds if email fails).
+- Never collect payment fields.
 
-### Upgrading later (before real traffic)
+See `.env.example` for all keys.
 
-| Option | Notes |
-|---|---|
-| Vercel Blob or KV (free tier) | Durable on Hobby; replace file append in `src/app/api/waitlist/route.ts` |
-| Neon / Postgres free | Structured queries + export |
-| Resend free tier | Email notify on each signup |
+### Env vars (Vercel → Project → Settings → Environment Variables)
 
-**Env vars (future):** `WAITLIST_BLOB_TOKEN`, `DATABASE_URL`, `RESEND_API_KEY` — none required for demo file/memory backend.
+| Var | Required | Purpose |
+|---|---|---|
+| `KV_REST_API_URL` | Yes* | Vercel KV / Upstash REST URL |
+| `KV_REST_API_TOKEN` | Yes* | Vercel KV / Upstash REST token |
+| `UPSTASH_REDIS_REST_URL` | Alt* | Native Upstash URL (instead of KV_*) |
+| `UPSTASH_REDIS_REST_TOKEN` | Alt* | Native Upstash token |
+| `RESEND_API_KEY` | Recommended | Outbound email |
+| `WAITLIST_NOTIFY_TO` | Optional | Default `searchjim@gmail.com` |
+| `RESEND_FROM` | Optional | Default `BuyPeaceSign <onboarding@resend.dev>` |
 
-Never collect payment fields here.
+\* One Redis pair required (KV_* **or** UPSTASH_*).
+
+### Jim setup (Hobby)
+
+1. **Vercel Storage:** Project → Storage → Create → Upstash Redis / KV → connect to this project (auto-fills `KV_REST_API_*`).
+2. **Resend:** https://resend.com → API Keys → Create. Add `RESEND_API_KEY` in Vercel env. Free tier can send from `onboarding@resend.dev` (verify domain later for custom From).
+3. Set `WAITLIST_NOTIFY_TO=searchjim@gmail.com` (or rely on code default).
+4. Redeploy after saving env vars.
+
+### Test plan
+
+1. Confirm env vars present in Vercel Production.
+2. Submit pre-order on https://buypeacesign.com with a real email.
+3. Expect `{ ok: true }` (not a storage-config 500).
+4. Check `searchjim@gmail.com` for “New BuyPeaceSign pre-order: …”.
+5. Optional: Upstash console → Redis → key `waitlist:entries` shows the JSON entry.
 
 ---
 

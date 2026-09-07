@@ -1,48 +1,18 @@
 import { NextResponse } from "next/server";
-import { mkdir, appendFile } from "fs/promises";
-import path from "path";
 import {
   parseWaitlistCreateInput,
   type WaitlistEntry,
 } from "@/lib/waitlist";
+import { getRedis, saveWaitlistEntry } from "@/lib/waitlist-store";
+import { sendWaitlistNotifyEmail } from "@/lib/waitlist-notify";
 
 /**
  * POST /api/waitlist — market-test early-access capture.
  *
- * Demo persistence: append JSON lines to `data/waitlist.jsonl` in the project
- * (and keep an in-memory mirror for the running process).
- *
- * Upgrade later (document in README):
- *   - Vercel Blob / KV free tier
- *   - Postgres / Neon free
- *   - Resend free-tier email notify
- * On Vercel serverless, the filesystem is ephemeral — move to Blob/KV before
- * production volume.
+ * Durable store: Upstash Redis / Vercel KV (`waitlist:entries` list).
+ * Notify: Resend email to WAITLIST_NOTIFY_TO (best-effort after persist).
+ * Never collect payment fields.
  */
-
-const memoryStore: WaitlistEntry[] = [];
-
-function dataFilePath(): string {
-  // Prefer project-local data/ for local + demo; fall back to /tmp on read-only hosts.
-  return path.join(process.cwd(), "data", "waitlist.jsonl");
-}
-
-async function persist(entry: WaitlistEntry): Promise<void> {
-  memoryStore.push(entry);
-  const file = dataFilePath();
-  try {
-    await mkdir(path.dirname(file), { recursive: true });
-    await appendFile(file, `${JSON.stringify(entry)}\n`, "utf8");
-  } catch {
-    // Filesystem may be read-only (some serverless). Memory store still holds entry.
-    const fallback = path.join("/tmp", "buypeacesign-waitlist.jsonl");
-    try {
-      await appendFile(fallback, `${JSON.stringify(entry)}\n`, "utf8");
-    } catch {
-      /* memory-only fallback */
-    }
-  }
-}
 
 export async function POST(request: Request) {
   let raw: unknown;
@@ -63,18 +33,40 @@ export async function POST(request: Request) {
     );
   }
 
+  if (!getRedis()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          "Waitlist storage is not configured. Set KV_REST_API_URL and KV_REST_API_TOKEN (or UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN).",
+      },
+      { status: 500 },
+    );
+  }
+
   const entry: WaitlistEntry = {
     ...parsed.data,
     createdAt: new Date().toISOString(),
   };
 
   try {
-    await persist(entry);
-  } catch {
+    await saveWaitlistEntry(entry);
+  } catch (err) {
+    console.error("[waitlist] persist failed:", err);
     return NextResponse.json(
-      { ok: false, error: "Could not save your pre-order interest." },
+      {
+        ok: false,
+        error: "Could not save your pre-order interest. Please try again.",
+      },
       { status: 500 },
     );
+  }
+
+  // Best-effort notify — never fail the signup if email fails after persist.
+  try {
+    await sendWaitlistNotifyEmail(entry);
+  } catch (err) {
+    console.error("[waitlist] notify failed after persist:", err);
   }
 
   return NextResponse.json({
@@ -83,11 +75,14 @@ export async function POST(request: Request) {
   });
 }
 
-/** Dev helper — not for production listing. */
+/** Health check — does not list entries. */
 export async function GET() {
+  const configured = Boolean(getRedis());
   return NextResponse.json({
     ok: true,
-    count: memoryStore.length,
-    note: "Entries also append to data/waitlist.jsonl when the filesystem allows.",
+    storageConfigured: configured,
+    note: configured
+      ? "Waitlist entries persist to Upstash/Vercel KV key waitlist:entries."
+      : "Set KV_REST_API_URL + KV_REST_API_TOKEN (or UPSTASH_* equivalents) to enable durable storage.",
   });
 }
