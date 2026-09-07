@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { PeaceSignPreview } from "@/components/PeaceSignPreview";
+import { HeroFacadeTint } from "@/components/HeroFacadeTint";
 import { ColorSlider } from "@/components/ColorSlider";
 import { PreorderForm } from "@/components/PreorderForm";
 import { InstallPrompt } from "@/components/InstallPrompt";
@@ -41,18 +41,9 @@ export default function LandingPage() {
             className="estate-hero__img"
             sizes="100vw"
           />
+          {/* Frameless tint of the baked on-wall Logo A — no second glyph */}
+          <HeroFacadeTint hex={liveHex} />
           <div className="estate-hero__veil" />
-        </div>
-
-        {/* Live symbol overlaid on the baked-in facade peace sign */}
-        <div className="estate-hero__facade-sign">
-          <span className="estate-hero__facade-mask" aria-hidden />
-          <PeaceSignPreview
-            hex={liveHex}
-            monument
-            glowStyle="warmer"
-            className="estate-hero__preview"
-          />
         </div>
 
         <div className="estate-hero__content">

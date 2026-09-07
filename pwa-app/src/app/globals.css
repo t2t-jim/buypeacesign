@@ -796,49 +796,21 @@ input {
   pointer-events: none;
 }
 
-/* Soft stone disc covering baked-in cyan/magenta facade glow */
-.estate-hero__facade-sign {
+/* Frameless mix-blend tint of the baked on-wall Logo A — no plate, glyph, or frame */
+.estate-hero__facade-tint {
   position: absolute;
   left: 50%;
   top: 27%;
   transform: translate(-50%, -50%);
-  width: clamp(72px, 16vw, 148px);
-  z-index: 2;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.estate-hero__facade-mask {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 160%;
-  height: 160%;
+  width: clamp(96px, 18vw, 168px);
+  height: clamp(96px, 18vw, 168px);
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(78, 70, 58, 0.95) 0%,
-    rgba(96, 86, 72, 0.82) 36%,
-    rgba(112, 100, 84, 0.42) 58%,
-    transparent 76%
-  );
-  pointer-events: none;
-  z-index: 0;
-}
-
-.estate-hero__preview {
-  position: relative;
   z-index: 1;
-  width: 100%;
-  margin: 0;
-  filter: drop-shadow(0 4px 18px rgba(44, 40, 36, 0.35));
-}
-
-.estate-hero__preview.peace-preview--monument {
-  width: 100%;
+  pointer-events: none;
+  mix-blend-mode: color;
+  opacity: 0.92;
+  -webkit-mask-image: radial-gradient(circle, #000 32%, rgba(0, 0, 0, 0.55) 52%, transparent 74%);
+  mask-image: radial-gradient(circle, #000 32%, rgba(0, 0, 0, 0.55) 52%, transparent 74%);
 }
 
 .estate-hero__content {
@@ -985,9 +957,10 @@ input {
   .estate-hero {
     min-height: min(88dvh, 820px);
   }
-  .estate-hero__facade-sign {
+  .estate-hero__facade-tint {
     top: 28%;
-    width: clamp(96px, 15vw, 168px);
+    width: clamp(110px, 16vw, 188px);
+    height: clamp(110px, 16vw, 188px);
   }
   .estate-hero__content {
     max-width: 400px;
@@ -1016,9 +989,10 @@ input {
   .estate-hero__img {
     object-position: center 28%;
   }
-  .estate-hero__facade-sign {
+  .estate-hero__facade-tint {
     top: 25%;
-    width: clamp(68px, 17vw, 120px);
+    width: clamp(88px, 19vw, 140px);
+    height: clamp(88px, 19vw, 140px);
   }
   .btn-primary,
   .preorder-form button,

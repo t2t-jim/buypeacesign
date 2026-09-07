@@ -10,6 +10,7 @@ import {
   type KeyboardEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
+import { LUXURY_DEFAULT_HEX } from "@/content/swatches";
 
 export type ColorSliderProps = {
   hex: string;
@@ -21,8 +22,26 @@ export type ColorSliderProps = {
   showLabel?: boolean;
 };
 
-const HUE_S = 0.88;
-const HUE_V = 1;
+/** Curated premium estate glow stops — not a harsh primary rainbow. */
+export const PREMIUM_GLOW_STOPS = [
+  "#F7F1E4", // warm white
+  "#F6EBD1", // soft warm white
+  "#EAD7B2", // champagne
+  "#D4B896", // amber champagne
+  "#C9A27A", // rose gold
+  "#E8B4A2", // soft blush
+  "#D4A0C0", // rose jewel
+  "#B47CFF", // dusk violet
+  "#8B7CFF", // soft indigo
+  "#4AA3FF", // sapphire
+  "#3DD6C6", // soft teal neon
+  "#7DDEA2", // soft jewel green
+  "#EAD7B2", // ease back toward champagne
+] as const;
+
+const PREMIUM_GRADIENT = `linear-gradient(90deg, ${PREMIUM_GLOW_STOPS.map(
+  (hex, i, arr) => `${hex} ${(i / (arr.length - 1)) * 100}%`,
+).join(", ")})`;
 
 function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
@@ -36,7 +55,7 @@ function normalizeHex(input: string): string {
       .map((c) => c + c)
       .join("");
   }
-  if (!/^[0-9A-F]{6}$/.test(h)) return "#F6EBD1";
+  if (!/^[0-9A-F]{6}$/.test(h)) return LUXURY_DEFAULT_HEX.toUpperCase();
   return `#${h}`;
 }
 
@@ -58,62 +77,44 @@ function rgbToHex(r: number, g: number, b: number): string {
   return `#${to(r)}${to(g)}${to(b)}`;
 }
 
-function rgbToHue(r: number, g: number, b: number): number {
-  const rn = r / 255;
-  const gn = g / 255;
-  const bn = b / 255;
-  const max = Math.max(rn, gn, bn);
-  const min = Math.min(rn, gn, bn);
-  const d = max - min;
-  if (d === 0) return 40; // warm default for near-whites
-  let h = 0;
-  if (max === rn) h = ((gn - bn) / d) % 6;
-  else if (max === gn) h = (bn - rn) / d + 2;
-  else h = (rn - gn) / d + 4;
-  h *= 60;
-  if (h < 0) h += 360;
-  return h;
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t;
 }
 
-function hueToHex(h: number): string {
-  const hh = ((h % 360) + 360) % 360;
-  const s = HUE_S;
-  const v = HUE_V;
-  const c = v * s;
-  const x = c * (1 - Math.abs(((hh / 60) % 2) - 1));
-  const m = v - c;
-  let rp = 0;
-  let gp = 0;
-  let bp = 0;
-  if (hh < 60) {
-    rp = c;
-    gp = x;
-  } else if (hh < 120) {
-    rp = x;
-    gp = c;
-  } else if (hh < 180) {
-    gp = c;
-    bp = x;
-  } else if (hh < 240) {
-    gp = x;
-    bp = c;
-  } else if (hh < 300) {
-    rp = x;
-    bp = c;
-  } else {
-    rp = c;
-    bp = x;
+/** Map t∈[0,1] across premium stops with RGB interpolation. */
+export function premiumTToHex(t: number): string {
+  const stops = PREMIUM_GLOW_STOPS;
+  const x = clamp(t, 0, 1) * (stops.length - 1);
+  const i = Math.floor(x);
+  const f = x - i;
+  if (i >= stops.length - 1) return normalizeHex(stops[stops.length - 1]);
+  const a = hexToRgb(stops[i]);
+  const b = hexToRgb(stops[i + 1]);
+  return rgbToHex(lerp(a.r, b.r, f), lerp(a.g, b.g, f), lerp(a.b, b.b, f));
+}
+
+function colorDist(a: string, b: string): number {
+  const A = hexToRgb(a);
+  const B = hexToRgb(b);
+  return (A.r - B.r) ** 2 + (A.g - B.g) ** 2 + (A.b - B.b) ** 2;
+}
+
+/** Nearest slider position for an incoming hex (swatch / controlled value). */
+export function hexToPremiumT(hex: string): number {
+  const target = normalizeHex(hex);
+  let bestT = 0;
+  let bestD = Infinity;
+  const steps = 240;
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const d = colorDist(premiumTToHex(t), target);
+    if (d < bestD) {
+      bestD = d;
+      bestT = t;
+    }
   }
-  return rgbToHex((rp + m) * 255, (gp + m) * 255, (bp + m) * 255);
+  return bestT;
 }
-
-function hexToHue(hex: string): number {
-  const { r, g, b } = hexToRgb(hex);
-  return rgbToHue(r, g, b);
-}
-
-const HUE_GRADIENT =
-  "linear-gradient(90deg, #FF0000 0%, #FFFF00 17%, #00FF00 33%, #00FFFF 50%, #0000FF 67%, #FF00FF 83%, #FF0000 100%)";
 
 export function ColorSlider({
   hex,
@@ -127,17 +128,17 @@ export function ColorSlider({
   const trackRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const displayHex = useMemo(() => normalizeHex(hex), [hex]);
-  const [hue, setHue] = useState(() => hexToHue(hex));
+  const [t, setT] = useState(() => hexToPremiumT(hex));
 
   useEffect(() => {
-    setHue(hexToHue(displayHex));
+    setT(hexToPremiumT(displayHex));
   }, [displayHex]);
 
-  const emitHue = useCallback(
-    (nextHue: number) => {
-      const h = clamp(nextHue, 0, 359.999);
-      setHue(h);
-      onChange(hueToHex(h));
+  const emitT = useCallback(
+    (nextT: number) => {
+      const clamped = clamp(nextT, 0, 1);
+      setT(clamped);
+      onChange(premiumTToHex(clamped));
     },
     [onChange],
   );
@@ -147,10 +148,10 @@ export function ColorSlider({
       const el = trackRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
-      const t = clamp((clientX - rect.left) / Math.max(rect.width, 1), 0, 1);
-      emitHue(t * 360);
+      const next = clamp((clientX - rect.left) / Math.max(rect.width, 1), 0, 1);
+      emitT(next);
     },
-    [emitHue],
+    [emitT],
   );
 
   const onPointerDown = useCallback(
@@ -181,26 +182,26 @@ export function ColorSlider({
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent<HTMLDivElement>) => {
-      const step = e.shiftKey ? 12 : 2;
+      const step = e.shiftKey ? 0.06 : 0.015;
       if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
         e.preventDefault();
-        emitHue(hue - step);
+        emitT(t - step);
       } else if (e.key === "ArrowRight" || e.key === "ArrowUp") {
         e.preventDefault();
-        emitHue(hue + step);
+        emitT(t + step);
       } else if (e.key === "Home") {
         e.preventDefault();
-        emitHue(0);
+        emitT(0);
       } else if (e.key === "End") {
         e.preventDefault();
-        emitHue(359);
+        emitT(1);
       }
     },
-    [emitHue, hue],
+    [emitT, t],
   );
 
-  const pct = (hue / 360) * 100;
-  const thumbColor = hueToHex(hue);
+  const pct = t * 100;
+  const thumbColor = premiumTToHex(t);
   const classes = [
     "color-slider",
     !showLabel && !showHex ? "color-slider--minimal" : "",
@@ -227,9 +228,9 @@ export function ColorSlider({
         tabIndex={0}
         aria-labelledby={labelId}
         aria-valuemin={0}
-        aria-valuemax={360}
-        aria-valuenow={Math.round(hue)}
-        aria-valuetext={`Hue ${Math.round(hue)} degrees, ${displayHex}`}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(pct)}
+        aria-valuetext={`${displayHex}`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -238,7 +239,7 @@ export function ColorSlider({
       >
         <div
           className="color-slider__track"
-          style={{ background: HUE_GRADIENT }}
+          style={{ background: PREMIUM_GRADIENT }}
           aria-hidden
         />
         <div
