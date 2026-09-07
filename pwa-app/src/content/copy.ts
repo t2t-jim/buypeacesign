@@ -1,5 +1,5 @@
 /**
- * BuyPeaceSign — approved UI copy (UX v1.1 market-test).
+ * BuyPeaceSign — approved UI copy (UX v1.1 market-test + luxury estate tone).
  * Keyed by route / component. Do not invent “Buy now” or price strings.
  */
 
@@ -11,8 +11,8 @@ export const copy = {
   },
 
   landing: {
-    h1: "Light that says peace.",
-    sub: "Custom outdoor peace-sign lights in 36\" and 48\". Early access is open — claim your place before they ship.",
+    h1: "Light for the homes that set the standard.",
+    sub: "Custom outdoor peace-sign lights for estates, gates, and pools — early access for residences that want a quiet statement.",
     preorderCard: {
       title: "Pre-order yours today",
       helper:
@@ -26,16 +26,30 @@ export const copy = {
     secondaryCta: "Design yours — pick size & color",
     trustChips: [
       "36\" & 48\"",
-      "Custom hex color",
+      "Custom glow",
       "AC powered (solar coming)",
       "Early access",
     ],
     /** Honest early-access framing — never invent subscriber counts. */
     socialProof: {
       label: "Early access is open",
-      detail: "Be among the first to light up your porch.",
+      detail: "Be among the first to light an extraordinary home.",
     },
-    footerMicro: "Made to replace those ugly wreaths on the outside of your home!",
+    lifestyle: {
+      title: "Placed with intention",
+      items: [
+        { id: "garage", label: "Garage", caption: "Architectural accent" },
+        { id: "pool", label: "Pool", caption: "Poolside presence" },
+        { id: "gate", label: "Gate", caption: "Gated arrival" },
+      ],
+    },
+    liveColor: {
+      eyebrow: "Live color",
+      h2: "See it in your light.",
+      sub: "Our signature glow. Tuned for night architecture. Made for your home.",
+    },
+    /** Estate-tone footer; wreath joke parked for a later playful blog post. */
+    footerMicro: "A signature light for extraordinary homes.",
   },
 
   configure: {

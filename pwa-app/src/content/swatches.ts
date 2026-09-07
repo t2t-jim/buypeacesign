@@ -18,12 +18,26 @@ export const DEFAULT_SWATCHES: readonly Swatch[] = [
   { id: "dusk", name: "Dusk", hex: "#C4A1FF" },
 ] as const;
 
+/** Luxury estate landing Live Color swatches (Concept 1 — Estate Glow). */
+export const LUXURY_SWATCHES: readonly Swatch[] = [
+  { id: "warm-white", name: "Warm White", hex: "#F6EBD1" },
+  { id: "champagne", name: "Champagne", hex: "#EAD7B2" },
+  { id: "sapphire", name: "Sapphire", hex: "#4AA3FF" },
+  { id: "dusk-violet", name: "Dusk Violet", hex: "#B47CFF" },
+] as const;
+
 /** Default preview / landing hero glow */
 export const DEFAULT_HEX = "#FFFFFF";
 
+/** Default Live Color selection on estate landing */
+export const LUXURY_DEFAULT_HEX = LUXURY_SWATCHES[0].hex;
+
 export function findSwatchByHex(hex: string): Swatch | undefined {
   const normalized = hex.trim().toUpperCase();
-  return DEFAULT_SWATCHES.find((s) => s.hex.toUpperCase() === normalized);
+  return (
+    LUXURY_SWATCHES.find((s) => s.hex.toUpperCase() === normalized) ??
+    DEFAULT_SWATCHES.find((s) => s.hex.toUpperCase() === normalized)
+  );
 }
 
 export default DEFAULT_SWATCHES;
