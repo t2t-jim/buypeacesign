@@ -1,5 +1,5 @@
-/* BuyPeaceSign PWA — network-first shell (bps-v15-tubeglow) */
-const CACHE = "bps-v15-tubeglow";
+/* BuyPeaceSign PWA — network-first shell (bps-v16-blankfix) */
+const CACHE = "bps-v16-blankfix";
 const PRECACHE = [
   "/manifest.webmanifest",
   "/icons/icon-192.png",
@@ -26,38 +26,55 @@ function isNavigationRequest(request) {
   return accept.includes("text/html");
 }
 
+function offlineFallback(request) {
+  return caches.match(request).then((cached) => {
+    if (cached) return cached;
+    if (isNavigationRequest(request)) {
+      return caches.match("/").then(
+        (home) =>
+          home ||
+          new Response(
+            "<!DOCTYPE html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><title>BuyPeaceSign</title><body style=\"font-family:system-ui;padding:2rem;background:#F7F3EC;color:#2c2824\"><p>You're offline. Reconnect and refresh.</p></body>",
+            { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } },
+          ),
+      );
+    }
+    return new Response("", { status: 504, statusText: "Offline" });
+  });
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.pathname.startsWith("/api/")) return;
 
-  // Navigations / documents / HTML: network-first, cache on success, offline fallback
+  // Navigations / HTML: network-first — never respond with undefined
   if (isNavigationRequest(request)) {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response && response.status === 200 && response.type === "basic") {
+          if (response && response.ok && response.type === "basic") {
             const clone = response.clone();
             caches.open(CACHE).then((cache) => cache.put(request, clone));
           }
           return response;
         })
-        .catch(() => caches.match(request)),
+        .catch(() => offlineFallback(request)),
     );
     return;
   }
 
-  // Other GETs: network-first (never prefer stale HTML)
+  // Static assets: network-first with safe offline fallback
   event.respondWith(
     fetch(request)
       .then((response) => {
-        if (response && response.status === 200 && response.type === "basic") {
+        if (response && response.ok && response.type === "basic") {
           const clone = response.clone();
           caches.open(CACHE).then((cache) => cache.put(request, clone));
         }
         return response;
       })
-      .catch(() => caches.match(request)),
+      .catch(() => offlineFallback(request)),
   );
 });
