@@ -75,9 +75,22 @@ export function normalizeHex(hex: string | undefined): string | undefined {
   if (!hex) return undefined;
   const t = hex.trim();
   if (!t) return undefined;
-  const withHash = t.startsWith("#") ? t : `#${t}`;
-  if (!/^#[0-9A-Fa-f]{6}$/.test(withHash)) return undefined;
-  return withHash.toUpperCase();
+  const withHash = (t.startsWith("#") ? t : `#${t}`).toUpperCase();
+  if (/^#[0-9A-F]{6}$/.test(withHash)) return withHash;
+  const short = withHash.match(/^#([0-9A-F])([0-9A-F])([0-9A-F])$/);
+  if (short) {
+    return `#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`;
+  }
+  return undefined;
+}
+
+export function isValidHexColor(hex: string | undefined): boolean {
+  return normalizeHex(hex) !== undefined;
+}
+
+export function sanitizeHexInput(raw: string): string {
+  const digits = raw.replace(/[^0-9A-Fa-f]/g, "").slice(0, 6);
+  return `#${digits}`;
 }
 
 export function isSizeInterest(value: unknown): value is SizeInterest {
