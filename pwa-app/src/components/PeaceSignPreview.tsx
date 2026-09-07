@@ -2,9 +2,9 @@
 
 /**
  * Live peace-sign light preview.
- * Default illumination: warmer softer (champagne estate-night bloom).
+ * Default illumination: warmer softer (estate-night bloom tinted by hex).
  * `glowStyle="tight"` — short falloff, crisp rim (C alternate).
- * `monument` — landing hero: larger stage + warm champagne blooms.
+ * `monument` — landing hero: larger stage + hex-driven blooms (facade overlay).
  */
 
 export type PeaceSignPreviewProps = {
@@ -12,25 +12,44 @@ export type PeaceSignPreviewProps = {
   sizeLabel?: string;
   className?: string;
   sticky?: boolean;
-  /** Larger size + warm champagne layered glow (landing hero). */
+  /** Larger size + layered glow (landing hero / facade). */
   monument?: boolean;
   /**
-   * Glow falloff style. Default `"warmer"` = champagne estate-night bloom.
+   * Glow falloff style. Default `"warmer"` = soft estate-night bloom.
    * `"tight"` = short falloff, crisp rim (C alternate).
    */
   glowStyle?: "warmer" | "tight";
 };
+
+function hexToRgba(hex: string, alpha: number): string {
+  const raw = hex.replace("#", "").trim();
+  const full =
+    raw.length === 3
+      ? raw
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : raw;
+  if (!/^[0-9a-fA-F]{6}$/.test(full)) {
+    return `rgba(255, 255, 255, ${alpha})`;
+  }
+  const n = parseInt(full, 16);
+  const r = (n >> 16) & 255;
+  const g = (n >> 8) & 255;
+  const b = n & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 function buildSvgFilter(hex: string, glowStyle: "warmer" | "tight"): string {
   if (glowStyle === "tight") {
     // Short falloff, crisp rim — same-color neon layers, tight radii
     return `drop-shadow(0 0 6px ${hex}) drop-shadow(0 0 14px ${hex})`;
   }
-  // Warmer softer: soft hex core + wider champagne haze + soft outer bloom
+  // Warmer softer: soft hex core + wider hex haze + soft outer bloom
   return [
     `drop-shadow(0 0 10px ${hex})`,
-    `drop-shadow(0 0 22px rgba(234, 215, 178, 0.55))`,
-    `drop-shadow(0 0 42px rgba(246, 235, 209, 0.35))`,
+    `drop-shadow(0 0 22px ${hexToRgba(hex, 0.6)})`,
+    `drop-shadow(0 0 42px ${hexToRgba(hex, 0.38)})`,
   ].join(" ");
 }
 
@@ -53,8 +72,15 @@ export function PeaceSignPreview({
     .filter(Boolean)
     .join(" ");
 
-  // Monument uses CSS filter on svg; non-monument uses inline multi-layer filter
-  const svgFilter = monument ? undefined : buildSvgFilter(glow, glowStyle);
+  // Always apply live hex filter (including monument — CSS no longer hardcodes champagne)
+  const svgFilter = buildSvgFilter(glow, glowStyle);
+
+  const bloomCore = {
+    background: `radial-gradient(circle, ${hexToRgba(glow, 0.55)} 0%, transparent 70%)`,
+  };
+  const bloomOuter = {
+    background: `radial-gradient(circle, ${hexToRgba(glow, 0.42)} 0%, transparent 70%)`,
+  };
 
   return (
     <div
@@ -67,22 +93,38 @@ export function PeaceSignPreview({
       {monument ? (
         glowStyle === "tight" ? (
           <>
-            <span className="peace-preview__bloom peace-preview__bloom--soft" aria-hidden />
+            <span
+              className="peace-preview__bloom peace-preview__bloom--soft"
+              style={bloomCore}
+              aria-hidden
+            />
           </>
         ) : (
           <>
-            <span className="peace-preview__bloom peace-preview__bloom--warm" aria-hidden />
-            <span className="peace-preview__bloom peace-preview__bloom--champagne" aria-hidden />
+            <span
+              className="peace-preview__bloom peace-preview__bloom--warm"
+              style={bloomCore}
+              aria-hidden
+            />
+            <span
+              className="peace-preview__bloom peace-preview__bloom--champagne"
+              style={bloomOuter}
+              aria-hidden
+            />
           </>
         )
       ) : glowStyle === "warmer" ? (
-        <span className="peace-preview__bloom peace-preview__bloom--soft" aria-hidden />
+        <span
+          className="peace-preview__bloom peace-preview__bloom--soft"
+          style={bloomCore}
+          aria-hidden
+        />
       ) : null}
       <svg
         viewBox="0 0 200 200"
         width="100%"
         aria-hidden
-        style={svgFilter ? { filter: svgFilter } : undefined}
+        style={{ filter: svgFilter }}
       >
         <circle
           cx="100"

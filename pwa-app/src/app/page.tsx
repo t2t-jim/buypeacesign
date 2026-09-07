@@ -43,15 +43,21 @@ export default function LandingPage() {
           />
           <div className="estate-hero__veil" />
         </div>
-        <div className="estate-hero__content">
+
+        {/* Live symbol overlaid on the baked-in facade peace sign */}
+        <div className="estate-hero__facade-sign">
+          <span className="estate-hero__facade-mask" aria-hidden />
           <PeaceSignPreview
             hex={liveHex}
             monument
             glowStyle="warmer"
             className="estate-hero__preview"
           />
+        </div>
+
+        <div className="estate-hero__content">
           <div className="estate-hero__slider">
-            <ColorSlider hex={liveHex} onChange={setLiveHex} />
+            <ColorSlider hex={liveHex} onChange={setLiveHex} showHex={false} showLabel={false} />
           </div>
         </div>
       </section>

@@ -17,6 +17,8 @@ export type ColorSliderProps = {
   className?: string;
   /** Show a tiny hex readout under the track (default true). */
   showHex?: boolean;
+  /** Visible "Glow color" label. When false, label stays sr-only for a11y (default true). */
+  showLabel?: boolean;
 };
 
 const HUE_S = 0.88;
@@ -118,6 +120,7 @@ export function ColorSlider({
   onChange,
   className,
   showHex = true,
+  showLabel = true,
 }: ColorSliderProps) {
   const reactId = useId();
   const labelId = `${reactId}-label`;
@@ -198,13 +201,25 @@ export function ColorSlider({
 
   const pct = (hue / 360) * 100;
   const thumbColor = hueToHex(hue);
-  const classes = ["color-slider", className ?? ""].filter(Boolean).join(" ");
+  const classes = [
+    "color-slider",
+    !showLabel && !showHex ? "color-slider--minimal" : "",
+    className ?? "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className={classes}>
-      <p id={labelId} className="color-slider__label">
-        Glow color
-      </p>
+      {showLabel ? (
+        <p id={labelId} className="color-slider__label">
+          Glow color
+        </p>
+      ) : (
+        <span id={labelId} className="sr-only">
+          Glow color
+        </span>
+      )}
       <div
         ref={trackRef}
         className="color-slider__hit"
