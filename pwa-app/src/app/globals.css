@@ -32,6 +32,8 @@ body {
   color: var(--text);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
+
+  overflow-x: hidden;
 }
 
 a {
@@ -70,7 +72,11 @@ input {
   width: 100%;
   max-width: 640px;
   margin: 0 auto;
-  padding: 1.15rem 1.15rem 3rem;
+  padding: 1.15rem
+    max(1.15rem, env(safe-area-inset-right, 0px))
+    calc(3rem + env(safe-area-inset-bottom, 0px))
+    max(1.15rem, env(safe-area-inset-left, 0px));
+  overflow-x: clip;
 }
 
 /* —— Header —— */
@@ -82,7 +88,10 @@ input {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.8rem 1.15rem;
+  padding: calc(0.8rem + env(safe-area-inset-top, 0px))
+    max(1.15rem, env(safe-area-inset-right, 0px))
+    0.8rem
+    max(1.15rem, env(safe-area-inset-left, 0px));
   background: rgba(7, 8, 15, 0.78);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
@@ -677,10 +686,8 @@ input {
 .estate-hero {
   position: relative;
   isolation: isolate;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  min-height: min(78vh, 680px);
+  width: 100%;
+  min-height: min(72dvh, 620px);
   display: flex;
   align-items: flex-end;
   overflow: hidden;
@@ -713,16 +720,18 @@ input {
   width: 100%;
   max-width: 640px;
   margin: 0 auto;
-  padding: 2.5rem 1.15rem 2rem;
+  padding: 2rem max(1.15rem, env(safe-area-inset-right, 0px))
+    calc(1.5rem + env(safe-area-inset-bottom, 0px))
+    max(1.15rem, env(safe-area-inset-left, 0px));
   display: flex;
   flex-direction: column;
-  gap: 1.35rem;
+  gap: 1.1rem;
 }
 
 .estate-hero__title {
   margin: 0;
   font-family: var(--font-display-family);
-  font-size: clamp(2.05rem, 7.2vw, 2.9rem);
+  font-size: clamp(1.7rem, 6.2vw, 2.9rem);
   font-weight: 550;
   line-height: 1.12;
   letter-spacing: -0.025em;
@@ -779,9 +788,54 @@ input {
     width: 100%;
   }
   .main:has(.estate-landing) {
+    max-width: none;
+  }
+  .main:has(.estate-landing) > .estate-landing > :not(.estate-hero) {
+    max-width: 980px;
+  }
+  .estate-hero__content {
     max-width: 980px;
   }
 }
+
+@media (max-width: 719px) {
+  .estate-hero {
+    min-height: min(68dvh, 560px);
+  }
+  .estate-hero__img {
+    object-position: center 28%;
+  }
+  .live-color {
+    padding: 1.15rem 1rem 1.35rem;
+  }
+  .live-color__swatch {
+    min-width: 76px;
+    min-height: 44px;
+    padding: 0.7rem 0.55rem 0.75rem;
+  }
+  .live-color__swatch-orb {
+    width: 40px;
+    height: 40px;
+  }
+  .live-color__preview {
+    width: min(200px, 70vw);
+  }
+  .btn-primary,
+  .preorder-form button,
+  .preorder-form input[type="email"],
+  .preorder-form input[type="text"] {
+    min-height: 48px;
+    font-size: 16px;
+  }
+  .site-header__link,
+  .site-header__signin {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.25rem;
+  }
+}
+
 
 /* Lifestyle strip */
 .lifestyle-strip {
