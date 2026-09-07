@@ -843,17 +843,11 @@ input {
 /* Frameless mix-blend tint of the baked on-wall Logo A — stacked on same spot */
 /* Exact-hex Logo A — tube luminosity via inline CSS drop-shadow; wall stays clean */
 .estate-hero__facade-sign {
-  /* Image-space: building centerline + raised mid of stone panel (above lintel) */
-  position: absolute;
-  left: 50%;
-  top: 18%;
-  transform: translate(-50%, -50%);
-  transform-origin: center center;
-  width: clamp(92px, 16vw, 148px);
-  height: clamp(92px, 16vw, 148px);
+  /* left/top/size set in JS from object-fit cover math (image-space anchor) */
   z-index: 1;
   pointer-events: none;
   overflow: visible;
+  will-change: left, top, width, height;
 }
 
 .estate-hero__content {
@@ -1046,11 +1040,6 @@ input {
   .estate-hero__img {
     object-position: center 36%;
   }
-  .estate-hero__facade-sign {
-    top: 17.5%;
-    width: clamp(120px, 14vw, 180px);
-    height: clamp(120px, 14vw, 180px);
-  }
   .estate-hero__content {
     max-width: 400px;
     padding: 0.85rem 1.5rem calc(1.15rem + env(safe-area-inset-bottom, 0px));
@@ -1080,11 +1069,6 @@ input {
   }
   .estate-hero__img {
     object-position: center 32%;
-  }
-  .estate-hero__facade-sign {
-    top: 18.5%;
-    width: clamp(100px, 24vw, 148px);
-    height: clamp(100px, 24vw, 148px);
   }
   .estate-hero__content {
     padding-bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
