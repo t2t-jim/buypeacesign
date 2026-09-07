@@ -837,9 +837,10 @@ input {
 /* Frameless mix-blend tint of the baked on-wall Logo A — stacked on same spot */
 /* Exact-hex Logo A — tube luminosity via inline CSS drop-shadow; wall stays clean */
 .estate-hero__facade-sign {
+  /* Centered on main stone face above glass entrance (src ~50%, 23.5%) */
   position: absolute;
   left: 50%;
-  top: 30%;
+  top: 24.5%;
   transform: translate(-50%, -50%) scale(0.78);
   transform-origin: center center;
   width: clamp(72px, 13vw, 120px);
@@ -1040,7 +1041,7 @@ input {
     object-position: center 36%;
   }
   .estate-hero__facade-sign {
-    top: 30%;
+    top: 24%;
     width: clamp(100px, 12vw, 160px);
     height: clamp(100px, 12vw, 160px);
   }
@@ -1075,7 +1076,7 @@ input {
     object-position: center 32%;
   }
   .estate-hero__facade-sign {
-    top: 29%;
+    top: 25.5%;
     width: clamp(84px, 20vw, 128px);
     height: clamp(84px, 20vw, 128px);
   }
