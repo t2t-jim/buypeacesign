@@ -19,11 +19,7 @@ const LIFESTYLE_IMAGES = [
   { id: "gate", src: "/estate/gate.png", alt: "Peace sign light on an estate gate" },
 ] as const;
 
-/** Compact hero: at most two chips (configure link + one label). */
-const HERO_CHIPS: ReadonlyArray<{ label: string; href?: string }> = [
-  { label: '36", 48" & custom', href: "/configure" },
-  { label: "Custom glow" },
-];
+const HERO_SRC = "/estate/hero-entrance.png";
 
 export default function LandingPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -38,15 +34,24 @@ export default function LandingPage() {
 
   return (
     <div className="estate-landing">
-      <section className="power-hero" aria-label="Live color preview">
-        <div className="power-hero__copy">
-          <h1 className="power-hero__title">{copy.landing.h1}</h1>
-          <p className="power-hero__sub">
-            Custom outdoor peace-sign lights for estates, gates, and pools.
-          </p>
-          {HERO_CHIPS.length > 0 ? (
-            <ul className="trust-chips power-hero__chips">
-              {HERO_CHIPS.map((chip) => (
+      <section className="estate-hero" aria-label="Estate entrance">
+        <div className="estate-hero__media" aria-hidden>
+          <Image
+            src={HERO_SRC}
+            alt=""
+            fill
+            priority
+            className="estate-hero__img"
+            sizes="100vw"
+          />
+          <div className="estate-hero__veil" />
+        </div>
+        <div className="estate-hero__content">
+          <div className="estate-hero__copy">
+            <h1 className="estate-hero__title">{copy.landing.h1}</h1>
+            <p className="estate-hero__sub">{copy.landing.sub}</p>
+            <ul className="trust-chips estate-hero__chips">
+              {copy.landing.trustChips.map((chip) => (
                 <li key={chip.label}>
                   {"href" in chip && chip.href ? (
                     <Link href={chip.href} className="trust-chips__link">
@@ -58,51 +63,52 @@ export default function LandingPage() {
                 </li>
               ))}
             </ul>
-          ) : null}
-        </div>
-
-        <div className="power-hero__stage">
-          <PeaceSignPreview
-            hex={liveHex}
-            monument
-            glowStyle="warmer"
-            className="power-hero__preview"
-          />
-          <div className="power-hero__wheel">
-            <ColorWheel hex={liveHex} onChange={setLiveHex} />
           </div>
-        </div>
 
-        <div
-          className="power-hero__swatches"
-          role="listbox"
-          aria-label="Signature glow colors"
-        >
-          {LUXURY_SWATCHES.map((swatch) => {
-            const selected =
-              liveHex.toUpperCase() === swatch.hex.toUpperCase();
-            return (
-              <button
-                key={swatch.id}
-                type="button"
-                role="option"
-                aria-selected={selected}
-                aria-pressed={selected}
-                className={`power-hero__swatch${selected ? " is-selected" : ""}`}
-                onClick={() => setLiveHex(swatch.hex)}
-              >
-                <span
-                  className="power-hero__swatch-orb"
-                  style={{
-                    background: swatch.hex,
-                    boxShadow: `0 0 18px ${swatch.hex}99`,
-                  }}
-                  aria-hidden
-                />
-                <span className="power-hero__swatch-name">{swatch.name}</span>
-              </button>
-            );
-          })}
+          <div className="estate-hero__color" aria-label="Live color preview">
+            <p className="estate-hero__color-eyebrow">Live color</p>
+            <p className="estate-hero__color-hint">See it in your light.</p>
+            <PeaceSignPreview
+              hex={liveHex}
+              monument
+              glowStyle="warmer"
+              className="estate-hero__preview"
+            />
+            <div className="estate-hero__wheel">
+              <ColorWheel hex={liveHex} onChange={setLiveHex} />
+            </div>
+            <div
+              className="estate-hero__swatches"
+              role="listbox"
+              aria-label="Signature glow colors"
+            >
+              {LUXURY_SWATCHES.map((swatch) => {
+                const selected =
+                  liveHex.toUpperCase() === swatch.hex.toUpperCase();
+                return (
+                  <button
+                    key={swatch.id}
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    aria-pressed={selected}
+                    className={`estate-hero__swatch${selected ? " is-selected" : ""}`}
+                    onClick={() => setLiveHex(swatch.hex)}
+                  >
+                    <span
+                      className="estate-hero__swatch-orb"
+                      style={{
+                        background: swatch.hex,
+                        boxShadow: `0 0 14px ${swatch.hex}99`,
+                      }}
+                      aria-hidden
+                    />
+                    <span className="estate-hero__swatch-name">{swatch.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -136,6 +142,7 @@ export default function LandingPage() {
         aria-label={copy.landing.preorderCard.title}
       >
         <div className="preorder-card preorder-section__card">
+          <p className="preorder-section__eyebrow">Request early access</p>
           <PreorderForm
             source="landing"
             onSuccess={() => setSubmitted(true)}

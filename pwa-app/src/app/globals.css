@@ -754,163 +754,253 @@ input {
 }
 
 
-/* —— Estate landing (power hero) —— */
+/* —— Estate landing (estate-hero splash + live color) —— */
 .estate-landing {
   display: flex;
   flex-direction: column;
   gap: 2.25rem;
-  padding-top: 0.15rem;
+  padding-top: 0;
 }
 
-.power-hero {
+.estate-hero {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: min(72dvh, 620px);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.estate-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.estate-hero__img {
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.estate-hero__veil {
+  position: absolute;
+  inset: 0;
+  /* Lighter daylight veil — soft cream wash at base (bright luxury) */
+  background:
+    linear-gradient(180deg, rgba(247, 243, 236, 0.18) 0%, rgba(44, 40, 36, 0.22) 38%, rgba(247, 243, 236, 0.72) 100%),
+    linear-gradient(90deg, rgba(247, 243, 236, 0.35) 0%, rgba(44, 40, 36, 0.12) 48%, rgba(247, 243, 236, 0.28) 100%);
+  pointer-events: none;
+}
+
+.estate-hero__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem max(1.15rem, env(safe-area-inset-right, 0px))
+    calc(1.5rem + env(safe-area-inset-bottom, 0px))
+    max(1.15rem, env(safe-area-inset-left, 0px));
   display: flex;
   flex-direction: column;
-  gap: 1.15rem;
-  padding: 0.35rem 0 0.25rem;
+  gap: 1.25rem;
+  box-sizing: border-box;
 }
 
-.power-hero__copy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
+.estate-hero__copy {
+  padding: 1.15rem 1.2rem 1.2rem;
+  border-radius: calc(var(--radius) + 2px);
+  background: rgba(255, 252, 248, 0.88);
+  border: 1px solid rgba(212, 184, 150, 0.35);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(14px) saturate(1.05);
+  -webkit-backdrop-filter: blur(14px) saturate(1.05);
 }
 
-.power-hero__title {
+.estate-hero__title {
   margin: 0;
   font-family: var(--font-display-family);
-  font-size: clamp(1.65rem, 5.8vw, 2.45rem);
+  font-size: clamp(1.7rem, 6.2vw, 2.9rem);
   font-weight: 550;
   line-height: 1.12;
   letter-spacing: -0.025em;
   color: var(--text);
+  text-shadow: none;
 }
 
-.power-hero__sub {
-  margin: 0;
+.estate-hero__sub {
+  margin: 0.65rem 0 0;
   color: var(--text-muted);
-  line-height: 1.55;
-  font-size: 1rem;
+  line-height: 1.6;
+  font-size: 1.02rem;
   max-width: 34em;
 }
 
-.power-hero__chips {
-  margin-top: 0.25rem;
+.estate-hero__chips {
+  margin-top: 1rem;
 }
 
-.power-hero__stage {
+.estate-hero__chips li {
+  background: rgba(255, 252, 248, 0.95);
+  border-color: rgba(196, 165, 116, 0.35);
+  color: var(--text-muted);
+  backdrop-filter: blur(10px);
+}
+
+/* Cream frosted panel: preview + wheel in the former preorder card slot */
+.estate-hero__color {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.1rem;
+  gap: 0.85rem;
   width: 100%;
   max-width: 100%;
-  padding: 0.85rem 0.5rem 0.5rem;
-  border-radius: calc(var(--radius) + 6px);
-  background:
-    linear-gradient(#FFFCFA, #FFF8F0) padding-box,
-    linear-gradient(135deg, rgba(212, 184, 150, 0.65), rgba(91, 168, 154, 0.4), rgba(232, 212, 176, 0.55)) border-box;
-  border: 1px solid transparent;
+  padding: 1.05rem 1rem 1.15rem;
+  border-radius: calc(var(--radius) + 4px);
+  background: rgba(255, 252, 248, 0.92);
+  border: 1px solid rgba(212, 184, 150, 0.4);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.65) inset,
+    0 0 0 1px rgba(255, 255, 255, 0.55) inset,
     var(--shadow-card);
+  backdrop-filter: blur(16px) saturate(1.08);
+  -webkit-backdrop-filter: blur(16px) saturate(1.08);
+  box-sizing: border-box;
 }
 
-.power-hero__preview {
-  width: min(260px, 72vw);
+.estate-hero__color-eyebrow {
+  margin: 0;
+  align-self: flex-start;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #A8845A;
+  font-weight: 650;
 }
 
-.power-hero__wheel {
+.estate-hero__color-hint {
+  margin: -0.35rem 0 0.15rem;
+  align-self: flex-start;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.estate-hero__preview {
+  width: min(220px, 68vw);
+}
+
+.estate-hero__wheel {
   display: flex;
   justify-content: center;
   width: 100%;
   max-width: 100%;
 }
 
-.power-hero__swatches {
+.estate-hero__swatches {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.55rem;
+  gap: 0.45rem;
   width: 100%;
 }
 
-.power-hero__swatch {
+.estate-hero__swatch {
   appearance: none;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  min-width: 68px;
-  padding: 0.55rem 0.5rem 0.6rem;
-  border-radius: 14px;
+  gap: 0.3rem;
+  min-width: 58px;
+  padding: 0.45rem 0.4rem 0.5rem;
+  border-radius: 12px;
   border: 1px solid rgba(196, 165, 116, 0.28);
-  background: rgba(255, 252, 248, 0.9);
+  background: rgba(255, 252, 248, 0.95);
   color: var(--text-muted);
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 2px 8px rgba(44, 40, 36, 0.04);
 }
 
-.power-hero__swatch:hover {
+.estate-hero__swatch:hover {
   border-color: rgba(212, 184, 150, 0.65);
   color: var(--text);
 }
 
-.power-hero__swatch.is-selected {
+.estate-hero__swatch.is-selected {
   border-color: rgba(196, 165, 116, 0.85);
   box-shadow: 0 0 0 2px rgba(212, 184, 150, 0.35);
   color: var(--text);
   background: #FFF5E8;
 }
 
-.power-hero__swatch-orb {
-  width: 34px;
-  height: 34px;
+.estate-hero__swatch-orb {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 1px solid rgba(44, 40, 36, 0.12);
 }
 
-.power-hero__swatch-name {
-  font-size: 0.7rem;
+.estate-hero__swatch-name {
+  font-size: 0.65rem;
   letter-spacing: 0.02em;
   font-weight: 550;
   text-align: center;
-  line-height: 1.25;
-}
-
-@media (min-width: 640px) {
-  .power-hero__stage {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: center;
-    justify-items: center;
-    gap: 1.25rem 1.5rem;
-    padding: 1.15rem 1.25rem 1rem;
-  }
-
-  .power-hero__preview {
-    width: min(280px, 38vw);
-  }
+  line-height: 1.2;
 }
 
 @media (min-width: 720px) {
+  .estate-hero__content {
+    max-width: 980px;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 3rem 1.5rem 2.35rem;
+  }
+  .estate-hero__copy {
+    flex: 1 1 52%;
+    max-width: 34rem;
+  }
+  .estate-hero__color {
+    flex: 0 1 360px;
+    width: 100%;
+  }
   .main:has(.estate-landing) {
-    max-width: 720px;
+    max-width: none;
+  }
+  .main:has(.estate-landing) > .estate-landing > :not(.estate-hero) {
+    max-width: 980px;
+    margin-inline: auto;
+    width: 100%;
+    box-sizing: border-box;
+    padding-inline: max(1.15rem, env(safe-area-inset-left, 0px))
+      max(1.15rem, env(safe-area-inset-right, 0px));
   }
 }
 
 @media (max-width: 719px) {
-  .power-hero__swatch {
-    min-width: 72px;
+  .estate-hero {
+    min-height: min(68dvh, 560px);
+  }
+  .estate-hero__img {
+    object-position: center 28%;
+  }
+  .estate-hero__swatch {
+    min-width: 64px;
     min-height: 44px;
-    padding: 0.65rem 0.5rem 0.7rem;
+    padding: 0.55rem 0.45rem 0.6rem;
   }
-  .power-hero__swatch-orb {
-    width: 38px;
-    height: 38px;
+  .estate-hero__swatch-orb {
+    width: 32px;
+    height: 32px;
   }
-  .power-hero__preview {
-    width: min(240px, 74vw);
+  .estate-hero__preview {
+    width: min(200px, 70vw);
+  }
+  .estate-hero__wheel {
+    padding-inline: 0.15rem;
   }
   .btn-primary,
   .preorder-form button,
@@ -1313,10 +1403,6 @@ input {
 @media (max-width: 719px) {
   .color-wheel {
     width: min(220px, 70vw);
-  }
-
-  .power-hero__wheel {
-    padding-inline: 0.25rem;
   }
 }
 
