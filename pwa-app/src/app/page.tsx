@@ -33,16 +33,18 @@ export default function LandingPage() {
     <div className="estate-landing">
       <section className="estate-hero" aria-label="Estate entrance">
         <div className="estate-hero__media" aria-hidden>
-          <Image
-            src={HERO_SRC}
-            alt=""
-            fill
-            priority
-            className="estate-hero__img"
-            sizes="100vw"
-          />
-          {/* Frameless tint of the baked on-wall Logo A — no second glyph */}
-          <HeroFacadeTint hex={liveHex} />
+          {/* Photo + Logo A share one transform so the sign tracks the stone face */}
+          <div className="estate-hero__photo">
+            <Image
+              src={HERO_SRC}
+              alt=""
+              fill
+              priority
+              className="estate-hero__img"
+              sizes="100vw"
+            />
+            <HeroFacadeTint hex={liveHex} />
+          </div>
           <div className="estate-hero__veil" />
         </div>
 

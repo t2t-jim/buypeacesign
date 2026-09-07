@@ -811,12 +811,18 @@ input {
   background: #07080f;
 }
 
+/* Shared zoom — image + Logo A move together on the facade */
+.estate-hero__photo {
+  position: absolute;
+  inset: 0;
+  transform: scale(0.78);
+  transform-origin: center 34%;
+}
+
 .estate-hero__img {
   /* Between mid cover and far 0.62 — slight pullback, still cover-based for iPhone */
   object-fit: cover;
   object-position: center 36%;
-  transform: scale(0.78);
-  transform-origin: center 34%;
 }
 
 .estate-hero__veil {
@@ -837,14 +843,14 @@ input {
 /* Frameless mix-blend tint of the baked on-wall Logo A — stacked on same spot */
 /* Exact-hex Logo A — tube luminosity via inline CSS drop-shadow; wall stays clean */
 .estate-hero__facade-sign {
-  /* Centered on main stone face above glass entrance (src ~50%, 23.5%) */
+  /* Image-space: building centerline + raised mid of stone panel (above lintel) */
   position: absolute;
   left: 50%;
-  top: 24.5%;
-  transform: translate(-50%, -50%) scale(0.78);
+  top: 18%;
+  transform: translate(-50%, -50%);
   transform-origin: center center;
-  width: clamp(72px, 13vw, 120px);
-  height: clamp(72px, 13vw, 120px);
+  width: clamp(92px, 16vw, 148px);
+  height: clamp(92px, 16vw, 148px);
   z-index: 1;
   pointer-events: none;
   overflow: visible;
@@ -1041,9 +1047,9 @@ input {
     object-position: center 36%;
   }
   .estate-hero__facade-sign {
-    top: 24%;
-    width: clamp(100px, 12vw, 160px);
-    height: clamp(100px, 12vw, 160px);
+    top: 17.5%;
+    width: clamp(120px, 14vw, 180px);
+    height: clamp(120px, 14vw, 180px);
   }
   .estate-hero__content {
     max-width: 400px;
@@ -1076,9 +1082,9 @@ input {
     object-position: center 32%;
   }
   .estate-hero__facade-sign {
-    top: 25.5%;
-    width: clamp(84px, 20vw, 128px);
-    height: clamp(84px, 20vw, 128px);
+    top: 18.5%;
+    width: clamp(100px, 24vw, 148px);
+    height: clamp(100px, 24vw, 148px);
   }
   .estate-hero__content {
     padding-bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
