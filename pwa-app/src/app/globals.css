@@ -754,7 +754,7 @@ input {
 }
 
 
-/* —— Estate landing (estate-hero splash + live color) —— */
+/* —— Estate landing (photo-forward splash + intro below) —— */
 .estate-landing {
   display: flex;
   flex-direction: column;
@@ -766,9 +766,10 @@ input {
   position: relative;
   isolation: isolate;
   width: 100%;
-  min-height: min(72dvh, 620px);
+  min-height: min(86dvh, 760px);
   display: flex;
   align-items: flex-end;
+  justify-content: center;
   overflow: hidden;
   border-radius: 0;
 }
@@ -781,16 +782,28 @@ input {
 
 .estate-hero__img {
   object-fit: cover;
-  object-position: center 35%;
+  object-position: center 32%;
 }
 
 .estate-hero__veil {
   position: absolute;
   inset: 0;
-  /* Lighter daylight veil — soft cream wash at base (bright luxury) */
+  /* Lighter veil — house stays the star; soft base for symbol + slider */
   background:
-    linear-gradient(180deg, rgba(247, 243, 236, 0.18) 0%, rgba(44, 40, 36, 0.22) 38%, rgba(247, 243, 236, 0.72) 100%),
-    linear-gradient(90deg, rgba(247, 243, 236, 0.35) 0%, rgba(44, 40, 36, 0.12) 48%, rgba(247, 243, 236, 0.28) 100%);
+    linear-gradient(
+      180deg,
+      rgba(247, 243, 236, 0.08) 0%,
+      rgba(44, 40, 36, 0.12) 42%,
+      rgba(44, 40, 36, 0.28) 68%,
+      rgba(247, 243, 236, 0.55) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(247, 243, 236, 0.12) 0%,
+      transparent 40%,
+      transparent 60%,
+      rgba(247, 243, 236, 0.1) 100%
+    );
   pointer-events: none;
 }
 
@@ -798,28 +811,107 @@ input {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 640px;
+  max-width: 420px;
   margin: 0 auto;
-  padding: 2rem max(1.15rem, env(safe-area-inset-right, 0px))
-    calc(1.5rem + env(safe-area-inset-bottom, 0px))
+  padding: 1.25rem max(1.15rem, env(safe-area-inset-right, 0px))
+    calc(1.35rem + env(safe-area-inset-bottom, 0px))
     max(1.15rem, env(safe-area-inset-left, 0px));
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  align-items: center;
+  gap: 0.85rem;
   box-sizing: border-box;
+  /* No frosted cream card — symbol + slim slider float over the house */
 }
 
-.estate-hero__copy {
-  padding: 1.15rem 1.2rem 1.2rem;
-  border-radius: calc(var(--radius) + 2px);
-  background: rgba(255, 252, 248, 0.88);
-  border: 1px solid rgba(212, 184, 150, 0.35);
-  box-shadow: var(--shadow-soft);
-  backdrop-filter: blur(14px) saturate(1.05);
-  -webkit-backdrop-filter: blur(14px) saturate(1.05);
+.estate-hero__preview {
+  width: min(220px, 58vw);
+  filter: drop-shadow(0 8px 28px rgba(44, 40, 36, 0.25));
 }
 
-.estate-hero__title {
+.estate-hero__slider {
+  width: 100%;
+  max-width: 340px;
+}
+
+/* Horizontal hue slider — slick, ≥44px hit area */
+.color-slider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.color-slider__label {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 252, 248, 0.88);
+  font-weight: 650;
+  text-shadow: 0 1px 8px rgba(44, 40, 36, 0.45);
+}
+
+.color-slider__hit {
+  position: relative;
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: none;
+  outline: none;
+  border-radius: 999px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.color-slider__hit:focus-visible {
+  box-shadow: 0 0 0 3px rgba(212, 184, 150, 0.75);
+}
+
+.color-slider__track {
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 252, 248, 0.55);
+  box-shadow:
+    0 2px 10px rgba(44, 40, 36, 0.28),
+    0 0 0 1px rgba(44, 40, 36, 0.12) inset;
+}
+
+.color-slider__thumb {
+  position: absolute;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 252, 248, 0.98);
+  pointer-events: none;
+  transition: box-shadow 0.15s ease;
+}
+
+.color-slider__hex {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 252, 248, 0.82);
+  text-shadow: 0 1px 6px rgba(44, 40, 36, 0.4);
+}
+
+/* Intro copy — well below the house + slider moment */
+.estate-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.35rem 0 0.25rem;
+  max-width: 40rem;
+}
+
+.estate-intro__title {
   margin: 0;
   font-family: var(--font-display-family);
   font-size: clamp(1.7rem, 6.2vw, 2.9rem);
@@ -827,186 +919,40 @@ input {
   line-height: 1.12;
   letter-spacing: -0.025em;
   color: var(--text);
-  text-shadow: none;
 }
 
-.estate-hero__sub {
-  margin: 0.65rem 0 0;
+.estate-intro__sub {
+  margin: 0;
   color: var(--text-muted);
   line-height: 1.6;
   font-size: 1.02rem;
   max-width: 34em;
 }
 
-.estate-hero__chips {
-  margin-top: 1rem;
+.estate-intro__chips {
+  margin-top: 0.55rem;
 }
 
-.estate-hero__chips li {
+.estate-intro__chips li {
   background: rgba(255, 252, 248, 0.95);
   border-color: rgba(196, 165, 116, 0.35);
   color: var(--text-muted);
-  backdrop-filter: blur(10px);
-}
-
-/* Cream frosted panel: preview + wheel in the former preorder card slot */
-.estate-hero__color {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.85rem;
-  width: 100%;
-  max-width: 100%;
-  padding: 1.05rem 1rem 1.15rem;
-  border-radius: calc(var(--radius) + 4px);
-  background: rgba(255, 252, 248, 0.92);
-  border: 1px solid rgba(212, 184, 150, 0.4);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.55) inset,
-    var(--shadow-card);
-  backdrop-filter: blur(16px) saturate(1.08);
-  -webkit-backdrop-filter: blur(16px) saturate(1.08);
-  box-sizing: border-box;
-}
-
-.estate-hero__color-eyebrow {
-  margin: 0;
-  align-self: flex-start;
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #A8845A;
-  font-weight: 650;
-}
-
-.estate-hero__color-hint {
-  margin: -0.35rem 0 0.15rem;
-  align-self: flex-start;
-  font-size: 0.92rem;
-  color: var(--text-muted);
-  line-height: 1.4;
-}
-
-.estate-hero__preview {
-  width: min(160px, 48vw);
-}
-
-.estate-hero__wheel {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  max-width: 100%;
-}
-
-/* Splash stays the star — color control is a tiny instrument */
-.estate-hero__wheel .color-wheel {
-  width: min(92px, 28vw);
-  gap: 0.35rem;
-}
-.estate-hero__wheel .color-wheel__disc {
-  box-shadow:
-    0 0 0 1px rgba(212, 184, 150, 0.35),
-    0 4px 12px rgba(44, 40, 36, 0.1);
-}
-.estate-hero__wheel .color-wheel__thumb {
-  width: 28px;
-  height: 28px;
-}
-.estate-hero__wheel .color-wheel__thumb-dot {
-  width: 10px;
-  height: 10px;
-}
-.estate-hero__wheel .color-wheel__thumb--hue .color-wheel__thumb-dot {
-  width: 9px;
-  height: 9px;
-}
-.estate-hero__wheel .color-wheel__value {
-  display: none; /* hide brightness strip on splash */
-}
-.estate-hero__wheel .color-wheel__meta {
-  gap: 0.35rem;
-}
-.estate-hero__wheel .color-wheel__hex {
-  font-size: 0.62rem;
-  padding: 0.2rem 0.4rem;
-  letter-spacing: 0.04em;
-}
-.estate-hero__wheel .color-wheel__native-wrap {
-  width: 28px;
-  height: 28px;
-}
-
-.estate-hero__swatches {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.45rem;
-  width: 100%;
-}
-
-.estate-hero__swatch {
-  appearance: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  min-width: 58px;
-  padding: 0.45rem 0.4rem 0.5rem;
-  border-radius: 12px;
-  border: 1px solid rgba(196, 165, 116, 0.28);
-  background: rgba(255, 252, 248, 0.95);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 8px rgba(44, 40, 36, 0.04);
-}
-
-.estate-hero__swatch:hover {
-  border-color: rgba(212, 184, 150, 0.65);
-  color: var(--text);
-}
-
-.estate-hero__swatch.is-selected {
-  border-color: rgba(196, 165, 116, 0.85);
-  box-shadow: 0 0 0 2px rgba(212, 184, 150, 0.35);
-  color: var(--text);
-  background: #FFF5E8;
-}
-
-.estate-hero__swatch-orb {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1px solid rgba(44, 40, 36, 0.12);
-}
-
-.estate-hero__swatch-name {
-  font-size: 0.65rem;
-  letter-spacing: 0.02em;
-  font-weight: 550;
-  text-align: center;
-  line-height: 1.2;
 }
 
 @media (min-width: 720px) {
+  .estate-hero {
+    min-height: min(88dvh, 820px);
+  }
   .estate-hero__content {
-    max-width: 980px;
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 2rem;
-    padding: 3rem 1.5rem 2.35rem;
+    max-width: 480px;
+    padding: 2rem 1.5rem calc(2rem + env(safe-area-inset-bottom, 0px));
+    gap: 1.1rem;
   }
-  .estate-hero__copy {
-    flex: 1 1 52%;
-    max-width: 34rem;
+  .estate-hero__preview {
+    width: min(280px, 36vw);
   }
-  .estate-hero__color {
-    flex: 0 1 220px;
-    width: 100%;
-    max-width: 240px;
-    gap: 0.55rem;
-    padding: 0.85rem 0.75rem 0.9rem;
+  .estate-hero__slider {
+    max-width: 380px;
   }
   .main:has(.estate-landing) {
     max-width: none;
@@ -1023,32 +969,13 @@ input {
 
 @media (max-width: 719px) {
   .estate-hero {
-    min-height: min(68dvh, 560px);
+    min-height: min(82dvh, 700px);
   }
   .estate-hero__img {
     object-position: center 28%;
   }
-  .estate-hero__swatch {
-    min-width: 64px;
-    min-height: 44px;
-    padding: 0.55rem 0.45rem 0.6rem;
-  }
-  .estate-hero__swatch-orb {
-    width: 32px;
-    height: 32px;
-  }
   .estate-hero__preview {
-    width: min(140px, 42vw);
-  }
-  .estate-hero__wheel {
-    padding-inline: 0.15rem;
-  }
-  .estate-hero__wheel .color-wheel {
-    width: min(84px, 26vw);
-  }
-  .estate-hero__color {
-    gap: 0.5rem;
-    padding: 0.8rem 0.7rem 0.85rem;
+    width: min(200px, 56vw);
   }
   .btn-primary,
   .preorder-form button,
@@ -1086,6 +1013,7 @@ input {
 
 
 /* Lifestyle strip */
+
 .lifestyle-strip {
   display: flex;
   flex-direction: column;
