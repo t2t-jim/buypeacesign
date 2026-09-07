@@ -95,12 +95,12 @@ function hsvToRgb(h: number, s: number, v: number) {
   return { r: (rp + m) * 255, g: (gp + m) * 255, b: (bp + m) * 255 };
 }
 
-/** Mild chroma lift so pale stops still read — not a bloom/backlight. */
+/** Richer recolor without fluorescent neon: solid S, capped V (no backlight). */
 function mildTint(hex: string): string {
   const { r, g, b } = hexToRgb(hex);
   const { h, s, v } = rgbToHsv(r, g, b);
-  const s2 = clamp(Math.max(s, 0.28) * 1.15, 0, 0.78);
-  const v2 = clamp(v, 0.55, 0.92);
+  const s2 = clamp(Math.max(s * 1.35, 0.48), 0, 0.88);
+  const v2 = clamp(Math.min(Math.max(v, 0.48), 0.78), 0.45, 0.78);
   const out = hsvToRgb(h, s2, v2);
   return rgbToHex(out.r, out.g, out.b);
 }

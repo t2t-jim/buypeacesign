@@ -778,10 +778,11 @@ input {
 }
 
 .estate-hero__img {
-  /* Mid crop via cover — reliable on iPhone (no contain+scale letterbox quirks) */
+  /* Between mid cover and far 0.62 — slight pullback, still cover-based for iPhone */
   object-fit: cover;
-  object-position: center 34%;
-  transform: none;
+  object-position: center 36%;
+  transform: scale(0.78);
+  transform-origin: center 34%;
 }
 
 .estate-hero__veil {
@@ -804,16 +805,17 @@ input {
   position: absolute;
   left: 50%;
   top: 27%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.78);
+  transform-origin: center center;
   width: clamp(88px, 16vw, 150px);
   height: clamp(88px, 16vw, 150px);
   border-radius: 50%;
   z-index: 1;
   pointer-events: none;
-  -webkit-mask-image: radial-gradient(circle, #000 46%, rgba(0, 0, 0, 0.35) 58%, transparent 68%);
-  mask-image: radial-gradient(circle, #000 46%, rgba(0, 0, 0, 0.35) 58%, transparent 68%);
+  -webkit-mask-image: radial-gradient(circle, #000 48%, rgba(0, 0, 0, 0.4) 60%, transparent 70%);
+  mask-image: radial-gradient(circle, #000 48%, rgba(0, 0, 0, 0.4) 60%, transparent 70%);
   mix-blend-mode: color;
-  opacity: 0.62;
+  opacity: 0.92; /* stronger clear recolor, still no backlight layer */
 }
 
 .estate-hero__content {

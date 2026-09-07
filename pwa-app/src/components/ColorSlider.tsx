@@ -25,25 +25,23 @@ export type ColorSliderProps = {
   allowHexInput?: boolean;
 };
 
-/** Huge rich spectrum across the wheel — full range, tasteful saturation. */
+/** Huge rich spectrum — deep jewels, not fluorescent neon. */
 export const PREMIUM_GLOW_STOPS = [
-  "#FFF8F0", // warm porcelain
-  "#F6EBD1", // warm white
-  "#EAD7B2", // champagne
-  "#E8C078", // soft gold
-  "#E8A04A", // amber
-  "#E87A4A", // warm coral
-  "#E85A5A", // soft red
-  "#E85A9A", // rose
-  "#C45AD4", // magenta orchid
-  "#8B5AD4", // violet
-  "#5A6AE8", // indigo
-  "#4AA3FF", // sapphire
-  "#3DD6C6", // aqua
-  "#4AE89A", // emerald
-  "#A8E85A", // lime gold
-  "#E8D45A", // soft yellow
-  "#EAD7B2", // ease to champagne
+  "#F3E6D2", // warm porcelain
+  "#E8D4B0", // champagne
+  "#D4B07A", // antique gold
+  "#C4894A", // amber
+  "#B85A3A", // terracotta
+  "#A84848", // deep rose
+  "#8E3A6E", // wine
+  "#6B3A8E", // plum
+  "#3F4A9A", // indigo
+  "#2F6A9A", // deep sapphire
+  "#2F7A7A", // teal (muted)
+  "#3A7A52", // forest
+  "#6A8A3A", // olive
+  "#A08A3A", // brass
+  "#E8D4B0", // ease to champagne
 ] as const;
 
 const PREMIUM_GRADIENT = `linear-gradient(90deg, ${PREMIUM_GLOW_STOPS.map(
