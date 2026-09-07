@@ -3,8 +3,7 @@ import Image from "next/image";
 import { copy } from "@/content/copy";
 
 /**
- * Top bar: Logo A + BuyPeaceSign wordmark + optional Sign in (stub).
- * Lifted from prep/stubs/SiteHeader.tsx — wired with next/image + Link.
+ * Top bar: Logo A + BuyPeaceSign wordmark + Blog + optional Sign in (stub).
  */
 
 export type SiteHeaderProps = {
@@ -25,11 +24,16 @@ export function SiteHeader({ showSignIn = true, className }: SiteHeaderProps) {
         />
         <span>{copy.brand.wordmark}</span>
       </Link>
-      {showSignIn ? (
-        <Link href="/account" className="site-header__signin">
-          {copy.brand.navSignIn}
+      <nav className="site-header__nav" aria-label="Primary">
+        <Link href="/blog" className="site-header__link">
+          {copy.brand.navBlog}
         </Link>
-      ) : null}
+        {showSignIn ? (
+          <Link href="/account" className="site-header__signin">
+            {copy.brand.navSignIn}
+          </Link>
+        ) : null}
+      </nav>
     </header>
   );
 }

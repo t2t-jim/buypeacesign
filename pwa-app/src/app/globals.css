@@ -119,6 +119,21 @@ input {
   color: var(--teal);
   text-decoration: none;
 }
+.site-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.site-header__link {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+.site-header__link:hover {
+  color: var(--text);
+  text-decoration: none;
+}
+
 
 /* —— Landing —— */
 .hero {
