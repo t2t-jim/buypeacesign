@@ -30,7 +30,7 @@ const SRC_H = 1024;
  * - Y: geometric mid of main stone face (roof/stone start ~10.9% → glass lintel ~35.9%)
  */
 const ANCHOR_X = 0.5;
-const ANCHOR_Y = (0.1094 + 0.3594) / 2; // ≈ 0.2344
+const ANCHOR_Y = 0.222; // stone mid with -9px live QA nudge (was geometric 0.2344)
 
 /** Logo diameter as a fraction of source image width. */
 const SIZE_FRAC = 0.115;
