@@ -22,21 +22,23 @@ export type ColorSliderProps = {
   showLabel?: boolean;
 };
 
-/** Curated premium estate glow stops — not a harsh primary rainbow. */
+/** Wide premium estate spectrum — tasteful jewels + warm anchors (not harsh neon-ring). */
 export const PREMIUM_GLOW_STOPS = [
-  "#F7F1E4", // warm white
-  "#F6EBD1", // soft warm white
+  "#FFF8F0", // warm porcelain
+  "#F6EBD1", // warm white
   "#EAD7B2", // champagne
-  "#D4B896", // amber champagne
-  "#C9A27A", // rose gold
-  "#E8B4A2", // soft blush
-  "#D4A0C0", // rose jewel
-  "#B47CFF", // dusk violet
-  "#8B7CFF", // soft indigo
-  "#4AA3FF", // sapphire
-  "#3DD6C6", // soft teal neon
-  "#7DDEA2", // soft jewel green
-  "#EAD7B2", // ease back toward champagne
+  "#E0C49A", // soft gold
+  "#D4B896", // amber
+  "#E8A87C", // warm apricot
+  "#E8B4A0", // soft rose
+  "#D4899C", // dusty rose
+  "#C9A0D4", // soft orchid (muted)
+  "#A89BE0", // soft periwinkle
+  "#7FA8D4", // soft sapphire
+  "#6BBFBF", // soft aqua (tasteful, not neon)
+  "#7DCEA0", // soft emerald
+  "#B8C97A", // soft olive gold
+  "#EAD7B2", // return to champagne
 ] as const;
 
 const PREMIUM_GRADIENT = `linear-gradient(90deg, ${PREMIUM_GLOW_STOPS.map(

@@ -774,11 +774,15 @@ input {
   position: absolute;
   inset: 0;
   z-index: 0;
+  background: #07080f; /* night sky when zoomed out */
 }
 
 .estate-hero__img {
-  object-fit: cover;
-  object-position: center 32%;
+  /* Back out MUCH more — house reads smaller in frame, more estate/sky around it */
+  object-fit: contain;
+  object-position: center center;
+  transform: scale(0.62);
+  transform-origin: center 42%;
 }
 
 .estate-hero__veil {
@@ -800,17 +804,20 @@ input {
 .estate-hero__facade-tint {
   position: absolute;
   left: 50%;
-  top: 27%;
-  transform: translate(-50%, -50%);
-  width: clamp(96px, 18vw, 168px);
-  height: clamp(96px, 18vw, 168px);
+  /* With object-fit:contain, sign sits nearer vertical center of the full frame */
+  top: 40%;
+  transform: translate(-50%, -50%) scale(0.62);
+  transform-origin: center center;
+  width: clamp(72px, 12vw, 128px);
+  height: clamp(72px, 12vw, 128px);
   border-radius: 50%;
   z-index: 1;
   pointer-events: none;
   mix-blend-mode: color;
-  opacity: 0.92;
-  -webkit-mask-image: radial-gradient(circle, #000 32%, rgba(0, 0, 0, 0.55) 52%, transparent 74%);
-  mask-image: radial-gradient(circle, #000 32%, rgba(0, 0, 0, 0.55) 52%, transparent 74%);
+  opacity: 0.88;
+  /* Tight mask — tint the mark only, no outer decorative ring */
+  -webkit-mask-image: radial-gradient(circle, #000 40%, rgba(0, 0, 0, 0.45) 58%, transparent 72%);
+  mask-image: radial-gradient(circle, #000 40%, rgba(0, 0, 0, 0.45) 58%, transparent 72%);
 }
 
 .estate-hero__content {
@@ -958,9 +965,9 @@ input {
     min-height: min(88dvh, 820px);
   }
   .estate-hero__facade-tint {
-    top: 28%;
-    width: clamp(110px, 16vw, 188px);
-    height: clamp(110px, 16vw, 188px);
+    top: 40%;
+    width: clamp(88px, 11vw, 140px);
+    height: clamp(88px, 11vw, 140px);
   }
   .estate-hero__content {
     max-width: 400px;
@@ -987,12 +994,12 @@ input {
     min-height: min(82dvh, 700px);
   }
   .estate-hero__img {
-    object-position: center 28%;
+    object-position: center center;
   }
   .estate-hero__facade-tint {
-    top: 25%;
-    width: clamp(88px, 19vw, 140px);
-    height: clamp(88px, 19vw, 140px);
+    top: 41%;
+    width: clamp(68px, 14vw, 110px);
+    height: clamp(68px, 14vw, 110px);
   }
   .btn-primary,
   .preorder-form button,
