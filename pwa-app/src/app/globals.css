@@ -888,7 +888,7 @@ input {
 }
 
 .estate-hero__preview {
-  width: min(220px, 68vw);
+  width: min(160px, 48vw);
 }
 
 .estate-hero__wheel {
@@ -896,6 +896,44 @@ input {
   justify-content: center;
   width: 100%;
   max-width: 100%;
+}
+
+/* Splash stays the star — color control is a tiny instrument */
+.estate-hero__wheel .color-wheel {
+  width: min(92px, 28vw);
+  gap: 0.35rem;
+}
+.estate-hero__wheel .color-wheel__disc {
+  box-shadow:
+    0 0 0 1px rgba(212, 184, 150, 0.35),
+    0 4px 12px rgba(44, 40, 36, 0.1);
+}
+.estate-hero__wheel .color-wheel__thumb {
+  width: 28px;
+  height: 28px;
+}
+.estate-hero__wheel .color-wheel__thumb-dot {
+  width: 10px;
+  height: 10px;
+}
+.estate-hero__wheel .color-wheel__thumb--hue .color-wheel__thumb-dot {
+  width: 9px;
+  height: 9px;
+}
+.estate-hero__wheel .color-wheel__value {
+  display: none; /* hide brightness strip on splash */
+}
+.estate-hero__wheel .color-wheel__meta {
+  gap: 0.35rem;
+}
+.estate-hero__wheel .color-wheel__hex {
+  font-size: 0.62rem;
+  padding: 0.2rem 0.4rem;
+  letter-spacing: 0.04em;
+}
+.estate-hero__wheel .color-wheel__native-wrap {
+  width: 28px;
+  height: 28px;
 }
 
 .estate-hero__swatches {
@@ -964,8 +1002,11 @@ input {
     max-width: 34rem;
   }
   .estate-hero__color {
-    flex: 0 1 360px;
+    flex: 0 1 220px;
     width: 100%;
+    max-width: 240px;
+    gap: 0.55rem;
+    padding: 0.85rem 0.75rem 0.9rem;
   }
   .main:has(.estate-landing) {
     max-width: none;
@@ -997,10 +1038,17 @@ input {
     height: 32px;
   }
   .estate-hero__preview {
-    width: min(200px, 70vw);
+    width: min(140px, 42vw);
   }
   .estate-hero__wheel {
     padding-inline: 0.15rem;
+  }
+  .estate-hero__wheel .color-wheel {
+    width: min(84px, 26vw);
+  }
+  .estate-hero__color {
+    gap: 0.5rem;
+    padding: 0.8rem 0.7rem 0.85rem;
   }
   .btn-primary,
   .preorder-form button,
