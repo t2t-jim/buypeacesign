@@ -19,8 +19,11 @@ const LIFESTYLE_IMAGES = [
   { id: "gate", src: "/estate/gate.png", alt: "Peace sign light on an estate gate" },
 ] as const;
 
-/** Prefer jpg hero; png is a fallback once assets land in public/estate. */
-const HERO_SRC = "/estate/hero-entrance.png";
+/** Compact hero: at most two chips (configure link + one label). */
+const HERO_CHIPS: ReadonlyArray<{ label: string; href?: string }> = [
+  { label: '36", 48" & custom', href: "/configure" },
+  { label: "Custom glow" },
+];
 
 export default function LandingPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -35,24 +38,15 @@ export default function LandingPage() {
 
   return (
     <div className="estate-landing">
-      <section className="estate-hero" aria-label="Estate entrance">
-        <div className="estate-hero__media" aria-hidden>
-          <Image
-            src={HERO_SRC}
-            alt=""
-            fill
-            priority
-            className="estate-hero__img"
-            sizes="100vw"
-          />
-          <div className="estate-hero__veil" />
-        </div>
-        <div className="estate-hero__content">
-          <div className="estate-hero__copy">
-            <h1 className="estate-hero__title">{copy.landing.h1}</h1>
-            <p className="estate-hero__sub">{copy.landing.sub}</p>
-            <ul className="trust-chips estate-hero__chips">
-              {copy.landing.trustChips.map((chip) => (
+      <section className="power-hero" aria-label="Live color preview">
+        <div className="power-hero__copy">
+          <h1 className="power-hero__title">{copy.landing.h1}</h1>
+          <p className="power-hero__sub">
+            Custom outdoor peace-sign lights for estates, gates, and pools.
+          </p>
+          {HERO_CHIPS.length > 0 ? (
+            <ul className="trust-chips power-hero__chips">
+              {HERO_CHIPS.map((chip) => (
                 <li key={chip.label}>
                   {"href" in chip && chip.href ? (
                     <Link href={chip.href} className="trust-chips__link">
@@ -64,18 +58,53 @@ export default function LandingPage() {
                 </li>
               ))}
             </ul>
-          </div>
-          <div className="preorder-card estate-hero__card">
-            <p className="estate-hero__card-eyebrow">Request early access</p>
-            <PreorderForm
-              source="landing"
-              onSuccess={() => setSubmitted(true)}
-            />
+          ) : null}
+        </div>
+
+        <div className="power-hero__stage">
+          <PeaceSignPreview
+            hex={liveHex}
+            monument
+            glowStyle="warmer"
+            className="power-hero__preview"
+          />
+          <div className="power-hero__wheel">
+            <ColorWheel hex={liveHex} onChange={setLiveHex} />
           </div>
         </div>
-      </section>
 
-      <InstallPrompt show={submitted} />
+        <div
+          className="power-hero__swatches"
+          role="listbox"
+          aria-label="Signature glow colors"
+        >
+          {LUXURY_SWATCHES.map((swatch) => {
+            const selected =
+              liveHex.toUpperCase() === swatch.hex.toUpperCase();
+            return (
+              <button
+                key={swatch.id}
+                type="button"
+                role="option"
+                aria-selected={selected}
+                aria-pressed={selected}
+                className={`power-hero__swatch${selected ? " is-selected" : ""}`}
+                onClick={() => setLiveHex(swatch.hex)}
+              >
+                <span
+                  className="power-hero__swatch-orb"
+                  style={{
+                    background: swatch.hex,
+                    boxShadow: `0 0 18px ${swatch.hex}99`,
+                  }}
+                  aria-hidden
+                />
+                <span className="power-hero__swatch-name">{swatch.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       <section className="lifestyle-strip" aria-labelledby="lifestyle-heading">
         <h2 id="lifestyle-heading" className="lifestyle-strip__title">
@@ -102,69 +131,28 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="live-color" aria-labelledby="live-color-heading">
-        <p className="live-color__eyebrow">{copy.landing.liveColor.eyebrow}</p>
-        <h2 id="live-color-heading" className="live-color__title">
-          {copy.landing.liveColor.h2}
-        </h2>
-        <p className="live-color__sub">{copy.landing.liveColor.sub}</p>
-        <div className="live-color__stage">
-          <PeaceSignPreview hex={liveHex} className="live-color__preview" />
-          <div className="live-color__wheel">
-            <ColorWheel hex={liveHex} onChange={setLiveHex} />
-          </div>
-          <div
-            className="live-color__swatches"
-            role="listbox"
-            aria-label="Signature glow colors"
-          >
-            {LUXURY_SWATCHES.map((swatch) => {
-              const selected =
-                liveHex.toUpperCase() === swatch.hex.toUpperCase();
-              return (
-                <button
-                  key={swatch.id}
-                  type="button"
-                  role="option"
-                  aria-selected={selected}
-                  aria-pressed={selected}
-                  className={`live-color__swatch${selected ? " is-selected" : ""}`}
-                  onClick={() => setLiveHex(swatch.hex)}
-                >
-                  <span
-                    className="live-color__swatch-orb"
-                    style={{
-                      background: swatch.hex,
-                      boxShadow: `0 0 18px ${swatch.hex}99`,
-                    }}
-                    aria-hidden
-                  />
-                  <span className="live-color__swatch-name">{swatch.name}</span>
-                </button>
-              );
-            })}
-          </div>
+      <section
+        className="preorder-section"
+        aria-label={copy.landing.preorderCard.title}
+      >
+        <div className="preorder-card preorder-section__card">
+          <PreorderForm
+            source="landing"
+            onSuccess={() => setSubmitted(true)}
+          />
         </div>
       </section>
 
-      <div className="social-proof estate-landing__proof" aria-label={copy.landing.socialProof.label}>
-        <div className="social-proof__avatars" aria-hidden>
-          <span className="social-proof__dot" />
-          <span className="social-proof__dot" />
-          <span className="social-proof__dot" />
-          <span className="social-proof__dot" />
-        </div>
-        <div className="social-proof__text">
-          <strong>{copy.landing.socialProof.label}</strong>
-          <span>{copy.landing.socialProof.detail}</span>
-        </div>
-      </div>
+      <InstallPrompt show={submitted} />
 
-      <Link href="/configure" className="secondary-link estate-landing__secondary">
-        {copy.landing.secondaryCta}
-      </Link>
-
-      <p className="footer-micro estate-footer">{copy.landing.footerMicro}</p>
+      <footer className="landing-footer">
+        <Link href="/configure" className="secondary-link landing-footer__secondary">
+          {copy.landing.secondaryCta}
+        </Link>
+        <p className="footer-micro landing-footer__micro">
+          {copy.landing.footerMicro}
+        </p>
+      </footer>
     </div>
   );
 }
