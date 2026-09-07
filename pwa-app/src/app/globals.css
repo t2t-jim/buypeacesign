@@ -88,10 +88,10 @@ input {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: calc(0.8rem + env(safe-area-inset-top, 0px))
-    max(1.15rem, env(safe-area-inset-right, 0px))
+  padding: calc(0.8rem + max(env(safe-area-inset-top, 0px), constant(safe-area-inset-top)))
+    max(1.15rem, env(safe-area-inset-right, 0px), constant(safe-area-inset-right))
     0.8rem
-    max(1.15rem, env(safe-area-inset-left, 0px));
+    max(1.15rem, env(safe-area-inset-left, 0px), constant(safe-area-inset-left));
   background: rgba(7, 8, 15, 0.78);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
@@ -833,6 +833,19 @@ input {
     display: inline-flex;
     align-items: center;
     padding: 0.35rem 0.25rem;
+  }
+  .size-seg label {
+    min-height: 44px;
+    padding: 0.65rem 0.9rem;
+  }
+  .preorder-form {
+    gap: 1rem;
+  }
+  .preorder-card {
+    padding: 1.45rem 1.25rem 1.5rem;
+  }
+  .peace-preview--sticky {
+    top: calc(3.5rem + env(safe-area-inset-top, 0px));
   }
 }
 

@@ -1,6 +1,10 @@
-/* BuyPeaceSign PWA — minimal offline shell cache (market-test v1) */
-const CACHE = "bps-v1";
-const PRECACHE = ["/", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png"];
+/* BuyPeaceSign PWA — network-first shell (bps-v3-estate) */
+const CACHE = "bps-v3-estate";
+const PRECACHE = [
+  "/manifest.webmanifest",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -16,15 +20,22 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+function isNavigationRequest(request) {
+  if (request.mode === "navigate") return true;
+  const accept = request.headers.get("accept") || "";
+  return accept.includes("text/html");
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.pathname.startsWith("/api/")) return;
 
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      const fetched = fetch(request)
+  // Navigations / documents / HTML: network-first, cache on success, offline fallback
+  if (isNavigationRequest(request)) {
+    event.respondWith(
+      fetch(request)
         .then((response) => {
           if (response && response.status === 200 && response.type === "basic") {
             const clone = response.clone();
@@ -32,8 +43,21 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(() => cached);
-      return cached || fetched;
-    }),
+        .catch(() => caches.match(request)),
+    );
+    return;
+  }
+
+  // Other GETs: network-first (never prefer stale HTML)
+  event.respondWith(
+    fetch(request)
+      .then((response) => {
+        if (response && response.status === 200 && response.type === "basic") {
+          const clone = response.clone();
+          caches.open(CACHE).then((cache) => cache.put(request, clone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(request)),
   );
 });

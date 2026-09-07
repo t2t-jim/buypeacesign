@@ -6,9 +6,14 @@ import { useEffect } from "react";
 export function ServiceWorkerRegister() {
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
-    navigator.serviceWorker.register("/sw.js").catch(() => {
-      /* silent — SW optional in local http without localhost quirks */
-    });
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        registration.update();
+      })
+      .catch(() => {
+        /* silent — SW optional in local http without localhost quirks */
+      });
   }, []);
   return null;
 }
