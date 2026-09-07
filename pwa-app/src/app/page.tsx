@@ -48,7 +48,7 @@ export default function LandingPage() {
 
         <div className="estate-hero__content">
           <div className="estate-hero__slider">
-            <ColorSlider hex={liveHex} onChange={setLiveHex} showHex={false} showLabel={false} />
+            <ColorSlider hex={liveHex} onChange={setLiveHex} showHex={false} showLabel={false} allowHexInput />
           </div>
         </div>
       </section>

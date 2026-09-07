@@ -11,6 +11,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { LUXURY_DEFAULT_HEX } from "@/content/swatches";
+import { sanitizeHexInput, normalizeHex as normalizeHexStrict } from "@/lib/waitlist";
 
 export type ColorSliderProps = {
   hex: string;
@@ -20,25 +21,29 @@ export type ColorSliderProps = {
   showHex?: boolean;
   /** Visible "Glow color" label. When false, label stays sr-only for a11y (default true). */
   showLabel?: boolean;
+  /** Editable #RRGGBB field next to the slider (default false). */
+  allowHexInput?: boolean;
 };
 
-/** Wide premium estate spectrum — tasteful jewels + warm anchors (not harsh neon-ring). */
+/** Huge rich spectrum across the wheel — full range, tasteful saturation. */
 export const PREMIUM_GLOW_STOPS = [
   "#FFF8F0", // warm porcelain
   "#F6EBD1", // warm white
   "#EAD7B2", // champagne
-  "#E0C49A", // soft gold
-  "#D4B896", // amber
-  "#E8A87C", // warm apricot
-  "#E8B4A0", // soft rose
-  "#D4899C", // dusty rose
-  "#C9A0D4", // soft orchid (muted)
-  "#A89BE0", // soft periwinkle
-  "#7FA8D4", // soft sapphire
-  "#6BBFBF", // soft aqua (tasteful, not neon)
-  "#7DCEA0", // soft emerald
-  "#B8C97A", // soft olive gold
-  "#EAD7B2", // return to champagne
+  "#E8C078", // soft gold
+  "#E8A04A", // amber
+  "#E87A4A", // warm coral
+  "#E85A5A", // soft red
+  "#E85A9A", // rose
+  "#C45AD4", // magenta orchid
+  "#8B5AD4", // violet
+  "#5A6AE8", // indigo
+  "#4AA3FF", // sapphire
+  "#3DD6C6", // aqua
+  "#4AE89A", // emerald
+  "#A8E85A", // lime gold
+  "#E8D45A", // soft yellow
+  "#EAD7B2", // ease to champagne
 ] as const;
 
 const PREMIUM_GRADIENT = `linear-gradient(90deg, ${PREMIUM_GLOW_STOPS.map(
@@ -124,16 +129,20 @@ export function ColorSlider({
   className,
   showHex = true,
   showLabel = true,
+  allowHexInput = false,
 }: ColorSliderProps) {
   const reactId = useId();
   const labelId = `${reactId}-label`;
+  const hexInputId = `${reactId}-hex`;
   const trackRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const displayHex = useMemo(() => normalizeHex(hex), [hex]);
   const [t, setT] = useState(() => hexToPremiumT(hex));
+  const [hexDraft, setHexDraft] = useState(displayHex);
 
   useEffect(() => {
     setT(hexToPremiumT(displayHex));
+    setHexDraft(displayHex);
   }, [displayHex]);
 
   const emitT = useCallback(
@@ -204,9 +213,20 @@ export function ColorSlider({
 
   const pct = t * 100;
   const thumbColor = premiumTToHex(t);
+  const onHexDraftChange = useCallback(
+    (raw: string) => {
+      const cleaned = sanitizeHexInput(raw);
+      setHexDraft(cleaned);
+      const valid = normalizeHexStrict(cleaned);
+      if (valid) onChange(valid);
+    },
+    [onChange],
+  );
+
   const classes = [
     "color-slider",
-    !showLabel && !showHex ? "color-slider--minimal" : "",
+    !showLabel && !showHex && !allowHexInput ? "color-slider--minimal" : "",
+    allowHexInput ? "color-slider--with-hex" : "",
     className ?? "",
   ]
     .filter(Boolean)
@@ -254,7 +274,30 @@ export function ColorSlider({
           aria-hidden
         />
       </div>
-      {showHex ? (
+      {allowHexInput ? (
+        <div className="color-slider__hex-row">
+          <label className="color-slider__hex-label" htmlFor={hexInputId}>
+            Hex
+          </label>
+          <input
+            id={hexInputId}
+            className="color-slider__hex-input"
+            type="text"
+            inputMode="text"
+            autoCapitalize="characters"
+            autoCorrect="off"
+            spellCheck={false}
+            maxLength={7}
+            value={hexDraft}
+            onChange={(e) => onHexDraftChange(e.target.value)}
+            onBlur={() => {
+              const valid = normalizeHexStrict(hexDraft);
+              setHexDraft(valid ?? displayHex);
+            }}
+            aria-invalid={normalizeHexStrict(hexDraft) ? undefined : true}
+          />
+        </div>
+      ) : showHex ? (
         <p className="color-slider__hex" aria-live="polite">
           {displayHex}
         </p>

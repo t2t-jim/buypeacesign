@@ -810,18 +810,10 @@ input {
   border-radius: 50%;
   z-index: 1;
   pointer-events: none;
-  -webkit-mask-image: radial-gradient(circle, #000 38%, rgba(0, 0, 0, 0.5) 56%, transparent 72%);
-  mask-image: radial-gradient(circle, #000 38%, rgba(0, 0, 0, 0.5) 56%, transparent 72%);
-}
-
-.estate-hero__facade-tint--color {
+  -webkit-mask-image: radial-gradient(circle, #000 46%, rgba(0, 0, 0, 0.35) 58%, transparent 68%);
+  mask-image: radial-gradient(circle, #000 46%, rgba(0, 0, 0, 0.35) 58%, transparent 68%);
   mix-blend-mode: color;
-  opacity: 1;
-}
-
-.estate-hero__facade-tint--glow {
-  mix-blend-mode: soft-light;
-  opacity: 0.95;
+  opacity: 0.62;
 }
 
 .estate-hero__content {
@@ -912,6 +904,49 @@ input {
   font-variant-numeric: tabular-nums;
   color: rgba(255, 252, 248, 0.82);
   text-shadow: 0 1px 6px rgba(44, 40, 36, 0.4);
+}
+
+.color-slider__hex-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  margin-top: 0.15rem;
+}
+
+.color-slider__hex-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 252, 248, 0.78);
+  font-weight: 650;
+  text-shadow: 0 1px 6px rgba(44, 40, 36, 0.35);
+}
+
+.color-slider__hex-input {
+  width: 6.6rem;
+  min-height: 36px;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 252, 248, 0.45);
+  background: rgba(20, 18, 16, 0.45);
+  color: #FFF8F0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+  outline: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.color-slider__hex-input:focus-visible {
+  box-shadow: 0 0 0 2px rgba(212, 184, 150, 0.75);
+}
+
+.color-slider__hex-input[aria-invalid="true"] {
+  border-color: rgba(232, 120, 100, 0.75);
 }
 
 /* Ultra-minimal splash slider — track only, no chrome */

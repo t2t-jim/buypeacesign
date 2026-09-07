@@ -1,10 +1,8 @@
 "use client";
 
 /**
- * Even facade recolor of the baked on-wall Logo A.
- * Dual blend (color + soft-light) + chroma boost so every slider stop
- * shifts the sign clearly — including warm near-whites.
- * No glyph, frame, plate, or second mark.
+ * Subtle recolor of the baked on-wall Logo A.
+ * Color blend only — no backlight, bloom, glow ring, or soft-light haze.
  */
 
 export type HeroFacadeTintProps = {
@@ -61,7 +59,7 @@ function rgbToHsv(r: number, g: number, b: number) {
     h *= 60;
     if (h < 0) h += 360;
   } else {
-    h = 40; // warm default for near-neutrals
+    h = 40;
   }
   const s = max === 0 ? 0 : d / max;
   return { h, s, v: max };
@@ -94,41 +92,32 @@ function hsvToRgb(h: number, s: number, v: number) {
     rp = c;
     bp = x;
   }
-  return {
-    r: (rp + m) * 255,
-    g: (gp + m) * 255,
-    b: (bp + m) * 255,
-  };
+  return { r: (rp + m) * 255, g: (gp + m) * 255, b: (bp + m) * 255 };
 }
 
-/** Boost chroma so pale slider stops still recolor the bright facade mark. */
-function boostForTint(hex: string): string {
+/** Mild chroma lift so pale stops still read — not a bloom/backlight. */
+function mildTint(hex: string): string {
   const { r, g, b } = hexToRgb(hex);
   const { h, s, v } = rgbToHsv(r, g, b);
-  const s2 = clamp(Math.max(s * 1.65, 0.42), 0, 0.92);
-  const v2 = clamp(Math.max(v, 0.72), 0, 1);
+  const s2 = clamp(Math.max(s, 0.28) * 1.15, 0, 0.78);
+  const v2 = clamp(v, 0.55, 0.92);
   const out = hsvToRgb(h, s2, v2);
   return rgbToHex(out.r, out.g, out.b);
 }
 
 export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
   const glow = normalizeHex(hex || "#F6EBD1");
-  const tint = boostForTint(glow);
-  const base = ["estate-hero__facade-tint", className ?? ""].filter(Boolean).join(" ");
+  const tint = mildTint(glow);
+  const classes = ["estate-hero__facade-tint", className ?? ""]
+    .filter(Boolean)
+    .join(" ");
   return (
-    <>
-      <span
-        className={`${base} estate-hero__facade-tint--color`}
-        style={{ background: tint }}
-        aria-hidden
-        data-facade-tint={glow}
-      />
-      <span
-        className={`${base} estate-hero__facade-tint--glow`}
-        style={{ background: tint }}
-        aria-hidden
-      />
-    </>
+    <span
+      className={classes}
+      style={{ background: tint }}
+      aria-hidden
+      data-facade-tint={glow}
+    />
   );
 }
 
