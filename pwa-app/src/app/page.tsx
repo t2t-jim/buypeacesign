@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PeaceSignPreview } from "@/components/PeaceSignPreview";
+import { ColorWheel } from "@/components/ColorWheel";
 import { PreorderForm } from "@/components/PreorderForm";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { copy } from "@/content/copy";
@@ -101,6 +102,9 @@ export default function LandingPage() {
         <p className="live-color__sub">{copy.landing.liveColor.sub}</p>
         <div className="live-color__stage">
           <PeaceSignPreview hex={liveHex} className="live-color__preview" />
+          <div className="live-color__wheel">
+            <ColorWheel hex={liveHex} onChange={setLiveHex} />
+          </div>
           <div
             className="live-color__swatches"
             role="listbox"
