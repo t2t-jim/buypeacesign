@@ -835,7 +835,8 @@ input {
 }
 
 /* Frameless mix-blend tint of the baked on-wall Logo A — stacked on same spot */
-.estate-hero__facade-tint {
+/* Exact-hex Logo A tubes on facade — no glow/filter/backlight */
+.estate-hero__facade-sign {
   position: absolute;
   left: 50%;
   top: 27%;
@@ -845,17 +846,8 @@ input {
   height: clamp(88px, 16vw, 150px);
   z-index: 1;
   pointer-events: none;
-  /* Tube-only Logo A mask — no soft radial disc / backlight */
-  -webkit-mask-image: url(/estate/logo-a-mask.svg);
-  mask-image: url(/estate/logo-a-mask.svg);
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  mix-blend-mode: color;
-  opacity: 1;
+  overflow: visible;
+  filter: none;
 }
 
 .estate-hero__content {
@@ -1048,7 +1040,7 @@ input {
   .estate-hero__img {
     object-position: center 36%;
   }
-  .estate-hero__facade-tint {
+  .estate-hero__facade-sign {
     top: 28%;
     width: clamp(100px, 12vw, 160px);
     height: clamp(100px, 12vw, 160px);
@@ -1083,7 +1075,7 @@ input {
   .estate-hero__img {
     object-position: center 32%;
   }
-  .estate-hero__facade-tint {
+  .estate-hero__facade-sign {
     top: 26%;
     width: clamp(84px, 20vw, 128px);
     height: clamp(84px, 20vw, 128px);
