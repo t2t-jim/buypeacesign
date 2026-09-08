@@ -9,11 +9,17 @@ import {
 } from "react";
 
 /**
- * Clean circular Logo A on the facade — exact brand hex.
- * Image-space anchor (building centerline + stone-panel mid).
- * Hard-clipped internals — no tails past the ring.
- * Luminosity via layered SVG strokes only (no CSS filter).
- * Circular clip-path on the SVG — kills rectangular gray compositing flash on hex change.
+ * Real neon-on-stone Logo A for the estate splash.
+ *
+ * Physically-inspired stack (matches garage/pool/gate placement shots):
+ *  1) Soft circular same-hex wall wash (radial falloff on stone — never a square)
+ *  2) Tube bloom (wide low-opacity strokes)
+ *  3) Brand tube body
+ *  4) Hot core + white filament
+ *
+ * Image-space anchor on building centerline + stone-panel mid.
+ * No CSS filter / no opacity GPU layer (those caused gray square flashes).
+ * Element uses clip-path:circle(50%) so compositing stays circular.
  */
 
 export type HeroFacadeTintProps = {
@@ -28,7 +34,10 @@ const SRC_H = 1024;
 const ANCHOR_X = 0.5;
 const ANCHOR_Y = (0.1094 + 0.3594) / 2; // 0.2344
 
-const SIZE_FRAC = 0.115;
+/** Tube mark size as fraction of source width. */
+const TUBE_FRAC = 0.115;
+/** Extra canvas so wall wash can fall off onto stone around the tubes. */
+const WASH_PAD = 1.52;
 
 const CX = 100;
 const CY = 100;
@@ -46,7 +55,7 @@ function normalizeHex(input: string): string {
   return `#${h}`;
 }
 
-function tubeCoreHex(brand: string, towardWhite = 0.55): string {
+function tubeCoreHex(brand: string, towardWhite = 0.62): string {
   const n = brand.slice(1);
   const mix = (ch: string) => {
     const v = Number.parseInt(ch, 16);
@@ -168,37 +177,12 @@ function PeaceRing({
   );
 }
 
-function TubeStack({
-  brand,
-  core,
-  clipId,
-}: {
-  brand: string;
-  core: string;
-  clipId: string;
-}) {
-  // Everything inside circular clipPath — no square paint bounds / gray layer flash
-  return (
-    <g clipPath={`url(#${clipId})`}>
-      <PeaceRing stroke={brand} strokeWidth={20} opacity={0.25} />
-      <PeaceRing stroke={brand} strokeWidth={15} opacity={0.45} />
-      <PeaceRing stroke={brand} strokeWidth={12} opacity={0.9} />
-      <PeaceRing stroke={core} strokeWidth={6.5} />
-      <PeaceRing stroke="#FFFFFF" strokeWidth={2.4} opacity={0.7} />
-      <PeaceInternals stroke={brand} strokeWidth={20} opacity={0.25} />
-      <PeaceInternals stroke={brand} strokeWidth={15} opacity={0.45} />
-      <PeaceInternals stroke={brand} strokeWidth={12} opacity={0.9} />
-      <PeaceInternals stroke={core} strokeWidth={6.5} />
-      <PeaceInternals stroke="#FFFFFF" strokeWidth={2.4} opacity={0.7} />
-    </g>
-  );
-}
-
 export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
   const brand = normalizeHex(hex || "#F6EBD1");
-  const core = tubeCoreHex(brand, 0.58);
+  const core = tubeCoreHex(brand, 0.62);
   const uid = useId().replace(/:/g, "");
-  const clipId = `facade-hard-clip-${uid}`;
+  const washId = `facade-wall-wash-${uid}`;
+  const clipId = `facade-tube-clip-${uid}`;
   const svgRef = useRef<SVGSVGElement>(null);
   const [anchor, setAnchor] = useState<AnchorPos>({
     left: 0,
@@ -229,10 +213,11 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
         ANCHOR_X,
         ANCHOR_Y,
       );
+      const tubePx = SRC_W * TUBE_FRAC * scale;
       setAnchor({
         left: x,
         top: y,
-        size: SRC_W * SIZE_FRAC * scale,
+        size: tubePx * WASH_PAD,
         ready: true,
       });
     };
@@ -261,7 +246,6 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
     width: anchor.size,
     height: anchor.size,
     transform: "translate(-50%, -50%)",
-    // visibility (not opacity) — opacity promotes a square GPU layer that flashes gray
     visibility: anchor.ready ? "visible" : "hidden",
     pointerEvents: "none",
     filter: "none",
@@ -269,13 +253,14 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
     border: "none",
     outline: "none",
     boxShadow: "none",
-    // Mask any residual rectangular compositing bounds to a circle
     clipPath: "circle(50%)",
-    // Safari
     WebkitClipPath: "circle(50%)",
     overflow: "hidden",
     contain: "paint",
   };
+
+  // Tube mark sits in the center ~1/WASH_PAD of the padded canvas
+  const markScale = 1 / WASH_PAD;
 
   return (
     <svg
@@ -288,12 +273,46 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
       style={style}
     >
       <defs>
-        {/* Slightly outside tube stroke so ring isn’t shaved; CSS circle(50%) kills square layer */}
+        {/* Soft circular wash onto stone — same hex, natural falloff (garage-like) */}
+        <radialGradient id={washId} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={brand} stopOpacity="0.42" />
+          <stop offset="28%" stopColor={brand} stopOpacity="0.22" />
+          <stop offset="55%" stopColor={brand} stopOpacity="0.09" />
+          <stop offset="78%" stopColor={brand} stopOpacity="0.03" />
+          <stop offset="100%" stopColor={brand} stopOpacity="0" />
+        </radialGradient>
         <clipPath id={clipId}>
-          <circle cx={CX} cy={CY} r={R + 12} />
+          <circle cx={CX} cy={CY} r={R + 10} />
         </clipPath>
       </defs>
-      <TubeStack brand={brand} core={core} clipId={clipId} />
+
+      {/* Layer 1 — gentle warm wash on stone (circular only) */}
+      <circle cx={CX} cy={CY} r={98} fill={`url(#${washId})`} />
+
+      {/* Layers 2–5 — neon tubes, scaled to leave room for wash */}
+      <g
+        transform={`translate(${CX}, ${CY}) scale(${markScale}) translate(${-CX}, ${-CY})`}
+      >
+        <g clipPath={`url(#${clipId})`}>
+          {/* Soft tube bloom */}
+          <PeaceRing stroke={brand} strokeWidth={26} opacity={0.18} />
+          <PeaceInternals stroke={brand} strokeWidth={26} opacity={0.18} />
+          <PeaceRing stroke={brand} strokeWidth={18} opacity={0.32} />
+          <PeaceInternals stroke={brand} strokeWidth={18} opacity={0.32} />
+
+          {/* Brand glass tube */}
+          <PeaceRing stroke={brand} strokeWidth={12} opacity={0.95} />
+          <PeaceInternals stroke={brand} strokeWidth={12} opacity={0.95} />
+
+          {/* Hot neon core */}
+          <PeaceRing stroke={core} strokeWidth={6.5} />
+          <PeaceInternals stroke={core} strokeWidth={6.5} />
+
+          {/* Filament highlight */}
+          <PeaceRing stroke="#FFFFFF" strokeWidth={2.2} opacity={0.78} />
+          <PeaceInternals stroke="#FFFFFF" strokeWidth={2.2} opacity={0.78} />
+        </g>
+      </g>
     </svg>
   );
 }
