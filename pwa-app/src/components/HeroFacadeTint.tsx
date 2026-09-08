@@ -10,10 +10,9 @@ import {
 
 /**
  * Clean circular Logo A on the facade — exact brand hex.
- * Positioned in *image space* via object-fit math against the hero <img>
- * (building centerline + mid of stone panel above the glass lintel).
- * Luminous neon tube look (bright core + same-hex bloom) — no wall spill plate,
- * no SVG feFlood (WebKit-safe), no tails past the ring.
+ * Image-space anchor (building centerline + stone-panel mid).
+ * Hard-clipped to the ring — no stroke/glow tails past the circle.
+ * Luminous neon tubes (hot core + same-hex bloom); no wall spill plate.
  */
 
 export type HeroFacadeTintProps = {
@@ -21,20 +20,19 @@ export type HeroFacadeTintProps = {
   className?: string;
 };
 
-/** Intrinsic hero photo size (public/estate/hero-entrance.png). */
 const SRC_W = 1536;
 const SRC_H = 1024;
 
-/**
- * Anchor in source-image normalized coords (measured on the clean estate photo):
- * - X: building vertical centerline through glass mullion / stairs
- * - Y: geometric mid of main stone face (roof/stone ~10.9% → glass lintel ~35.9%)
- */
+/** Measured on hero-entrance.png: stone start 10.94% → glass lintel 35.94%. */
 const ANCHOR_X = 0.5;
-const ANCHOR_Y = (0.1094 + 0.3594) / 2; // ≈ 0.2344 — true stone-panel mid
+const ANCHOR_Y = (0.1094 + 0.3594) / 2; // 0.2344 — do not overshoot
 
-/** Logo diameter as a fraction of source image width. */
 const SIZE_FRAC = 0.115;
+
+/** Circle geometry in viewBox 0..200 */
+const CX = 100;
+const CY = 100;
+const R = 78;
 
 function normalizeHex(input: string): string {
   let h = input.trim().replace(/^#/, "").toUpperCase();
@@ -48,7 +46,6 @@ function normalizeHex(input: string): string {
   return `#${h}`;
 }
 
-/** Mix brand toward white for a hot neon tube core (placement-shot look). */
 function tubeCoreHex(brand: string, towardWhite = 0.55): string {
   const n = brand.slice(1);
   const mix = (ch: string) => {
@@ -77,7 +74,6 @@ function parseObjectPosition(value: string): { x: number; y: number } {
   return { x: parse(parts[0], 0.5), y: parse(parts[1], 0.36) };
 }
 
-/** Map a point in the source bitmap into the object-fit:cover element box. */
 function coverPoint(
   boxW: number,
   boxH: number,
@@ -101,58 +97,77 @@ type AnchorPos = {
   ready: boolean;
 };
 
-function PeaceMark({
+/** Internals only — endpoints inset so stroke stays inside the ring. */
+function PeaceInternals({
   stroke,
   strokeWidth,
-  clipId,
   opacity = 1,
 }: {
   stroke: string;
   strokeWidth: number;
-  clipId: string;
   opacity?: number;
 }) {
+  // Inset path ends by half stroke so caps don’t poke past the ring
+  const inset = Math.min(R - 2, strokeWidth * 0.55);
+  const y0 = CY - R + inset;
+  const y1 = CY + R - inset;
+  // Diagonals: from center toward bottom of ring, shortened
+  const reach = R - inset;
+  const dx = reach * 0.66;
+  const dy = reach * 0.88;
   return (
     <g opacity={opacity}>
-      <circle
-        cx="100"
-        cy="100"
-        r="78"
-        fill="none"
+      <line
+        x1={CX}
+        y1={y0}
+        x2={CX}
+        y2={y1}
         stroke={stroke}
         strokeWidth={strokeWidth}
         strokeLinecap="butt"
       />
-      <g clipPath={`url(#${clipId})`}>
-        <line
-          x1="100"
-          y1="22"
-          x2="100"
-          y2="178"
-          stroke={stroke}
-          strokeWidth={strokeWidth}
-          strokeLinecap="butt"
-        />
-        <line
-          x1="100"
-          y1="100"
-          x2="48"
-          y2="168"
-          stroke={stroke}
-          strokeWidth={strokeWidth}
-          strokeLinecap="butt"
-        />
-        <line
-          x1="100"
-          y1="100"
-          x2="152"
-          y2="168"
-          stroke={stroke}
-          strokeWidth={strokeWidth}
-          strokeLinecap="butt"
-        />
-      </g>
+      <line
+        x1={CX}
+        y1={CY}
+        x2={CX - dx}
+        y2={CY + dy}
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="butt"
+      />
+      <line
+        x1={CX}
+        y1={CY}
+        x2={CX + dx}
+        y2={CY + dy}
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="butt"
+      />
     </g>
+  );
+}
+
+function PeaceRing({
+  stroke,
+  strokeWidth,
+  opacity = 1,
+}: {
+  stroke: string;
+  strokeWidth: number;
+  opacity?: number;
+}) {
+  return (
+    <circle
+      cx={CX}
+      cy={CY}
+      r={R}
+      fill="none"
+      stroke={stroke}
+      strokeWidth={strokeWidth}
+      strokeLinecap="butt"
+      opacity={opacity}
+    />
   );
 }
 
@@ -160,8 +175,8 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
   const brand = normalizeHex(hex || "#F6EBD1");
   const core = tubeCoreHex(brand, 0.58);
   const uid = useId().replace(/:/g, "");
-  const clipId = `facade-peace-clip-${uid}`;
-  const svgRef = useRef<SVGSVGElement>(null);
+  const clipId = `facade-hard-clip-${uid}`;
+  const wrapRef = useRef<HTMLSpanElement>(null);
   const [anchor, setAnchor] = useState<AnchorPos>({
     left: 0,
     top: 0,
@@ -170,9 +185,9 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
   });
 
   useLayoutEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    const photo = svg.closest(".estate-hero__photo") as HTMLElement | null;
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const photo = wrap.closest(".estate-hero__photo") as HTMLElement | null;
     const img = photo?.querySelector("img") as HTMLImageElement | null;
     if (!photo || !img) return;
 
@@ -216,50 +231,77 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
     .filter(Boolean)
     .join(" ");
 
-  // Placement-shot luminosity: hot core + tight same-hex bloom (no cyan/purple plate)
+  // Tube luminosity — bloom stays inside circular overflow clip (no ray tails)
   const tubeGlow = [
     `drop-shadow(0 0 1px ${core})`,
     `drop-shadow(0 0 2px ${brand})`,
     `drop-shadow(0 0 5px ${brand})`,
-    `drop-shadow(0 0 12px ${brand}ee)`,
-    `drop-shadow(0 0 22px ${brand}99)`,
-    `drop-shadow(0 0 36px ${brand}55)`,
+    `drop-shadow(0 0 11px ${brand}dd)`,
+    `drop-shadow(0 0 18px ${brand}88)`,
   ].join(" ");
 
-  const style: CSSProperties = {
-    filter: tubeGlow,
+  // Circular clip box slightly larger than the mark so soft glow remains, rays die
+  const clipPad = 1.12;
+  const wrapStyle: CSSProperties = {
     position: "absolute",
     left: anchor.left,
     top: anchor.top,
-    width: anchor.size,
-    height: anchor.size,
+    width: anchor.size * clipPad,
+    height: anchor.size * clipPad,
     transform: "translate(-50%, -50%)",
+    borderRadius: "50%",
+    overflow: "hidden",
     opacity: anchor.ready ? 1 : 0,
     pointerEvents: "none",
+    zIndex: 1,
+  };
+
+  const svgStyle: CSSProperties = {
+    filter: tubeGlow,
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    width: `${100 / clipPad}%`,
+    height: `${100 / clipPad}%`,
+    transform: "translate(-50%, -50%)",
+    overflow: "hidden",
   };
 
   return (
-    <svg
-      ref={svgRef}
-      className={classes}
-      viewBox="0 0 200 200"
-      aria-hidden
-      data-facade-tint={brand}
+    <span
+      ref={wrapRef}
+      className="estate-hero__facade-sign-wrap"
+      style={wrapStyle}
       data-facade-anchor={`${ANCHOR_X},${ANCHOR_Y.toFixed(4)}`}
-      style={style}
+      aria-hidden
     >
-      <defs>
-        <clipPath id={clipId}>
-          <circle cx="100" cy="100" r="78" />
-        </clipPath>
-      </defs>
+      <svg
+        className={classes}
+        viewBox="0 0 200 200"
+        aria-hidden
+        data-facade-tint={brand}
+        style={svgStyle}
+      >
+        <defs>
+          {/* Hard clip: nothing past the ring (internals + any overpaint) */}
+          <clipPath id={clipId}>
+            <circle cx={CX} cy={CY} r={R} />
+          </clipPath>
+        </defs>
 
-      {/* Soft outer tube body (brand) */}
-      <PeaceMark stroke={brand} strokeWidth={15} clipId={clipId} opacity={0.92} />
-      {/* Hot neon core — matches garage/pool luminous tubes */}
-      <PeaceMark stroke={core} strokeWidth={8} clipId={clipId} />
-      <PeaceMark stroke="#FFFFFF" strokeWidth={3.2} clipId={clipId} opacity={0.75} />
-    </svg>
+        {/* Ring (defines the circle — not clipped) */}
+        <PeaceRing stroke={brand} strokeWidth={14} opacity={0.95} />
+        <PeaceRing stroke={core} strokeWidth={7.5} />
+        <PeaceRing stroke="#FFFFFF" strokeWidth={2.8} opacity={0.7} />
+
+        {/* Internals hard-clipped to the circle — no tails past the ring */}
+        <g clipPath={`url(#${clipId})`}>
+          <PeaceInternals stroke={brand} strokeWidth={14} opacity={0.95} />
+          <PeaceInternals stroke={core} strokeWidth={7.5} />
+          <PeaceInternals stroke="#FFFFFF" strokeWidth={2.8} opacity={0.7} />
+        </g>
+      </svg>
+    </span>
   );
 }
 

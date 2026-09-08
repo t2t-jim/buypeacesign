@@ -842,12 +842,16 @@ input {
 
 /* Frameless mix-blend tint of the baked on-wall Logo A — stacked on same spot */
 /* Exact-hex Logo A — tube luminosity via inline CSS drop-shadow; wall stays clean */
-.estate-hero__facade-sign {
-  /* left/top/size set in JS from object-fit cover math (image-space anchor) */
+.estate-hero__facade-sign-wrap {
+  /* circular overflow clip — kills glow/stroke tails past the ring */
   z-index: 1;
   pointer-events: none;
-  overflow: visible;
-  will-change: left, top, width, height;
+}
+
+.estate-hero__facade-sign {
+  /* position/size owned by wrap + JS image-space anchor */
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .estate-hero__content {
