@@ -9,15 +9,9 @@ import {
 } from "react";
 
 /**
- * Photoreal neon-on-stone Logo A (garage / pool / gate reference).
- *
- * Stack (back → front), all inside circle clip (no gray square, no tails):
- *  1) Soft circular wall wash — soft-light into the photo (photographed feel)
- *  2) Blurred same-hex tube bloom (SVG blur only — no feFlood / no CSS filter box)
- *  3) Soft glass tube body
- *  4) Hot core (warm, not crisp white sticker lines)
- *
- * Image-space anchor; optical raise for bottom-heavy mark.
+ * Facade Logo A — luminous neon tubing only.
+ * Tight same-hex bloom on the tubes (no radial wall-wash aura / glowing orb).
+ * Circle clip (no gray square). Inset geometry (no tails). Image-space center.
  */
 
 export type HeroFacadeTintProps = {
@@ -29,14 +23,11 @@ const SRC_W = 1536;
 const SRC_H = 1024;
 
 const ANCHOR_X = 0.5;
-/**
- * Stone panel ~10.94%→35.94% (geo mid 0.2344).
- * Raised further so the mark reads dead-center optically (Jim: still low at 0.227).
- */
 const ANCHOR_Y = 0.212;
 
 const TUBE_FRAC = 0.12;
-const WASH_PAD = 1.55;
+/** Small pad so tight tube bloom isn’t clipped hard by circle(50%). */
+const BLOOM_PAD = 1.18;
 
 const CX = 100;
 const CY = 100;
@@ -54,7 +45,7 @@ function normalizeHex(input: string): string {
   return `#${h}`;
 }
 
-function tubeCoreHex(brand: string, towardWhite = 0.48): string {
+function tubeCoreHex(brand: string, towardWhite = 0.5): string {
   const n = brand.slice(1);
   const mix = (ch: string) => {
     const v = Number.parseInt(ch, 16);
@@ -105,7 +96,6 @@ type AnchorPos = {
   ready: boolean;
 };
 
-/** Inset Logo A — no tails past the ring. */
 function PeaceMark({
   stroke,
   strokeWidth,
@@ -166,11 +156,10 @@ function PeaceMark({
 export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
   const brand = normalizeHex(hex || "#F6EBD1");
   const core = tubeCoreHex(brand, 0.5);
-  const hot = tubeCoreHex(brand, 0.72);
+  const hot = tubeCoreHex(brand, 0.7);
   const uid = useId().replace(/:/g, "");
-  const washId = `facade-wash-${uid}`;
-  const bloomFilterId = `facade-bloom-blur-${uid}`;
-  const softFilterId = `facade-soft-tube-${uid}`;
+  const tubeBloomId = `facade-tube-bloom-${uid}`;
+  const softTubeId = `facade-soft-tube-${uid}`;
   const clipId = `facade-clip-${uid}`;
   const svgRef = useRef<SVGSVGElement>(null);
   const [anchor, setAnchor] = useState<AnchorPos>({
@@ -206,7 +195,7 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
       setAnchor({
         left: x,
         top: y,
-        size: tubePx * WASH_PAD,
+        size: tubePx * BLOOM_PAD,
         ready: true,
       });
     };
@@ -228,10 +217,8 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
     .filter(Boolean)
     .join(" ");
 
-  const markScale = 1 / WASH_PAD;
+  const markScale = 1 / BLOOM_PAD;
 
-  // No CSS filter on the root SVG (that painted the gray square).
-  // Softness comes from SVG feGaussianBlur on bloom/tube only + soft-light wash.
   const style: CSSProperties = {
     position: "absolute",
     left: anchor.left,
@@ -263,85 +250,55 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
       style={style}
     >
       <defs>
-        {/* Photographed-style wall wash — warm falloff onto stone */}
-        <radialGradient id={washId} cx="50%" cy="48%" r="52%">
-          <stop offset="0%" stopColor={brand} stopOpacity="0.5" />
-          <stop offset="22%" stopColor={brand} stopOpacity="0.28" />
-          <stop offset="48%" stopColor={brand} stopOpacity="0.12" />
-          <stop offset="72%" stopColor={brand} stopOpacity="0.04" />
-          <stop offset="100%" stopColor={brand} stopOpacity="0" />
-        </radialGradient>
-
-        {/* Bloom haze — blur only (no feFlood; WebKit-safe) */}
+        {/* Tight bloom ON the tube paths only — not a wall disc */}
         <filter
-          id={bloomFilterId}
-          x="-60%"
-          y="-60%"
-          width="220%"
-          height="220%"
+          id={tubeBloomId}
+          x="-35%"
+          y="-35%"
+          width="170%"
+          height="170%"
           colorInterpolationFilters="sRGB"
         >
-          <feGaussianBlur in="SourceGraphic" stdDeviation="5.5" result="blur" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2.4" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
-            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-
-        {/* Slight tube softness — refraction-like edge */}
         <filter
-          id={softFilterId}
-          x="-20%"
-          y="-20%"
-          width="140%"
-          height="140%"
+          id={softTubeId}
+          x="-15%"
+          y="-15%"
+          width="130%"
+          height="130%"
           colorInterpolationFilters="sRGB"
         >
-          <feGaussianBlur in="SourceGraphic" stdDeviation="0.55" result="soft" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="0.45" result="soft" />
           <feMerge>
             <feMergeNode in="soft" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-
         <clipPath id={clipId}>
-          <circle cx={CX} cy={CY} r={R + 6} />
+          <circle cx={CX} cy={CY} r={R + 4} />
         </clipPath>
       </defs>
-
-      {/* 1) Wall wash — soft-light blends into stone (not a flat sticker plate) */}
-      <circle
-        cx={CX}
-        cy={CY}
-        r={100}
-        fill={`url(#${washId})`}
-        style={{ mixBlendMode: "soft-light" }}
-      />
-      <circle
-        cx={CX}
-        cy={CY}
-        r={88}
-        fill={`url(#${washId})`}
-        opacity={0.55}
-        style={{ mixBlendMode: "screen" }}
-      />
 
       <g
         transform={`translate(${CX}, ${CY}) scale(${markScale}) translate(${-CX}, ${-CY})`}
       >
-        {/* 2) Soft bloom / haze behind tubes */}
-        <g filter={`url(#${bloomFilterId})`} opacity={0.85}>
-          <PeaceMark stroke={brand} strokeWidth={16} opacity={0.7} />
-        </g>
-        <g filter={`url(#${bloomFilterId})`} opacity={0.4}>
-          <PeaceMark stroke={core} strokeWidth={22} opacity={0.55} />
+        {/* Tight same-hex bloom hugging the tubes */}
+        <g filter={`url(#${tubeBloomId})`} opacity={0.9}>
+          <g clipPath={`url(#${clipId})`}>
+            <PeaceMark stroke={brand} strokeWidth={14} opacity={0.55} />
+          </g>
         </g>
 
-        {/* 3–4) Glass tube + hot core (slight softness, no hard white sticker) */}
-        <g clipPath={`url(#${clipId})`} filter={`url(#${softFilterId})`}>
-          <PeaceMark stroke={brand} strokeWidth={11} opacity={0.88} />
+        {/* Luminous glass tubing */}
+        <g clipPath={`url(#${clipId})`} filter={`url(#${softTubeId})`}>
+          <PeaceMark stroke={brand} strokeWidth={11} opacity={0.92} />
           <PeaceMark stroke={core} strokeWidth={6.5} opacity={0.95} />
-          <PeaceMark stroke={hot} strokeWidth={2.8} opacity={0.85} />
+          <PeaceMark stroke={hot} strokeWidth={2.6} opacity={0.8} />
         </g>
       </g>
     </svg>
