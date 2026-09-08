@@ -843,14 +843,14 @@ input {
 /* Facade Logo A — image-space anchor, circular clip, SVG tube glow */
 /* Exact-hex Logo A — tube luminosity via inline CSS drop-shadow; wall stays clean */
 .estate-hero__facade-sign {
-  /* JS image-space anchor; circular clip only — never a square layer on color change */
+  /* Photoreal neon — JS anchor; circular clip; no CSS filter (SVG blur only) */
   z-index: 1;
   pointer-events: none;
   background: transparent !important;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  filter: none !important;
+  /* allow inline none; never add drop-shadow here */
   overflow: hidden;
   border-radius: 50%;
   -webkit-clip-path: circle(50%);

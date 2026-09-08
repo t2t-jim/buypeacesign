@@ -1,5 +1,5 @@
-/* BuyPeaceSign PWA — network-first shell (bps-v26-earlyglow) */
-const CACHE = "bps-v26-earlyglow";
+/* BuyPeaceSign PWA — network-first shell (bps-v27-photoreal) */
+const CACHE = "bps-v27-photoreal";
 const PRECACHE = [
   "/manifest.webmanifest",
   "/icons/icon-192.png",
