@@ -9,17 +9,9 @@ import {
 } from "react";
 
 /**
- * Real neon-on-stone Logo A for the estate splash.
- *
- * Physically-inspired stack (matches garage/pool/gate placement shots):
- *  1) Soft circular same-hex wall wash (radial falloff on stone — never a square)
- *  2) Tube bloom (wide low-opacity strokes)
- *  3) Brand tube body
- *  4) Hot core + white filament
- *
- * Image-space anchor on building centerline + stone-panel mid.
- * No CSS filter / no opacity GPU layer (those caused gray square flashes).
- * Element uses clip-path:circle(50%) so compositing stays circular.
+ * Facade Logo A — early “warmer soft” neon-on-stone (glow B / PeaceSignPreview).
+ * Soft warm tube glow + gentle circular wall wash like garage/pool/gate.
+ * Image-space stone-panel mid (slight optical nudge). Circle clip — no gray square.
  */
 
 export type HeroFacadeTintProps = {
@@ -30,14 +22,13 @@ export type HeroFacadeTintProps = {
 const SRC_W = 1536;
 const SRC_H = 1024;
 
-/** Measured on hero-entrance.png: stone start 10.94% → glass lintel 35.94%. */
 const ANCHOR_X = 0.5;
-const ANCHOR_Y = (0.1094 + 0.3594) / 2; // 0.2344
+/** Geometric mid 0.2344; slight raise so bottom-heavy Logo A reads dead-center. */
+const ANCHOR_Y = 0.227;
 
-/** Tube mark size as fraction of source width. */
-const TUBE_FRAC = 0.115;
-/** Extra canvas so wall wash can fall off onto stone around the tubes. */
-const WASH_PAD = 1.52;
+const TUBE_FRAC = 0.118;
+/** Room for soft bloom / wall wash inside circular clip. */
+const WASH_PAD = 1.38;
 
 const CX = 100;
 const CY = 100;
@@ -55,7 +46,15 @@ function normalizeHex(input: string): string {
   return `#${h}`;
 }
 
-function tubeCoreHex(brand: string, towardWhite = 0.62): string {
+function hexToRgba(hex: string, alpha: number): string {
+  const n = normalizeHex(hex).slice(1);
+  const r = Number.parseInt(n.slice(0, 2), 16);
+  const g = Number.parseInt(n.slice(2, 4), 16);
+  const b = Number.parseInt(n.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function tubeCoreHex(brand: string, towardWhite = 0.55): string {
   const n = brand.slice(1);
   const mix = (ch: string) => {
     const v = Number.parseInt(ch, 16);
@@ -65,6 +64,15 @@ function tubeCoreHex(brand: string, towardWhite = 0.62): string {
       .toUpperCase();
   };
   return `#${mix(n.slice(0, 2))}${mix(n.slice(2, 4))}${mix(n.slice(4, 6))}`;
+}
+
+/** Early warmer-soft glow B — same recipe as PeaceSignPreview default. */
+function warmerTubeFilter(hex: string): string {
+  return [
+    `drop-shadow(0 0 10px ${hex})`,
+    `drop-shadow(0 0 22px ${hexToRgba(hex, 0.6)})`,
+    `drop-shadow(0 0 42px ${hexToRgba(hex, 0.38)})`,
+  ].join(" ");
 }
 
 function parseObjectPosition(value: string): { x: number; y: number } {
@@ -106,7 +114,7 @@ type AnchorPos = {
   ready: boolean;
 };
 
-function PeaceInternals({
+function PeaceMark({
   stroke,
   strokeWidth,
   opacity = 1,
@@ -115,7 +123,7 @@ function PeaceInternals({
   strokeWidth: number;
   opacity?: number;
 }) {
-  const inset = Math.min(R - 2, strokeWidth * 0.55);
+  const inset = Math.min(R - 2, strokeWidth * 0.5);
   const y0 = CY - R + inset;
   const y1 = CY + R - inset;
   const reach = R - inset;
@@ -123,6 +131,15 @@ function PeaceInternals({
   const dy = reach * 0.88;
   return (
     <g opacity={opacity}>
+      <circle
+        cx={CX}
+        cy={CY}
+        r={R}
+        fill="none"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="butt"
+      />
       <line
         x1={CX}
         y1={y0}
@@ -154,34 +171,12 @@ function PeaceInternals({
   );
 }
 
-function PeaceRing({
-  stroke,
-  strokeWidth,
-  opacity = 1,
-}: {
-  stroke: string;
-  strokeWidth: number;
-  opacity?: number;
-}) {
-  return (
-    <circle
-      cx={CX}
-      cy={CY}
-      r={R}
-      fill="none"
-      stroke={stroke}
-      strokeWidth={strokeWidth}
-      strokeLinecap="butt"
-      opacity={opacity}
-    />
-  );
-}
-
 export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
   const brand = normalizeHex(hex || "#F6EBD1");
-  const core = tubeCoreHex(brand, 0.62);
+  const core = tubeCoreHex(brand, 0.55);
   const uid = useId().replace(/:/g, "");
-  const washId = `facade-wall-wash-${uid}`;
+  const bloomCoreId = `facade-bloom-core-${uid}`;
+  const bloomOuterId = `facade-bloom-outer-${uid}`;
   const clipId = `facade-tube-clip-${uid}`;
   const svgRef = useRef<SVGSVGElement>(null);
   const [anchor, setAnchor] = useState<AnchorPos>({
@@ -239,6 +234,10 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
     .filter(Boolean)
     .join(" ");
 
+  const markScale = 1 / WASH_PAD;
+  // Warmer glow B filter — clipped to circle(50%) so no gray square flash
+  const tubeFilter = warmerTubeFilter(brand);
+
   const style: CSSProperties = {
     position: "absolute",
     left: anchor.left,
@@ -248,7 +247,6 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
     transform: "translate(-50%, -50%)",
     visibility: anchor.ready ? "visible" : "hidden",
     pointerEvents: "none",
-    filter: "none",
     background: "transparent",
     border: "none",
     outline: "none",
@@ -257,10 +255,9 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
     WebkitClipPath: "circle(50%)",
     overflow: "hidden",
     contain: "paint",
+    // Early luminous neon — same warmer soft recipe as PeaceSignPreview / glow B
+    filter: tubeFilter,
   };
-
-  // Tube mark sits in the center ~1/WASH_PAD of the padded canvas
-  const markScale = 1 / WASH_PAD;
 
   return (
     <svg
@@ -273,44 +270,33 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
       style={style}
     >
       <defs>
-        {/* Soft circular wash onto stone — same hex, natural falloff (garage-like) */}
-        <radialGradient id={washId} cx="50%" cy="50%" r="50%">
+        {/* PeaceSignPreview warmer blooms — circular wall wash on stone */}
+        <radialGradient id={bloomCoreId} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={brand} stopOpacity="0.55" />
+          <stop offset="70%" stopColor={brand} stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id={bloomOuterId} cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor={brand} stopOpacity="0.42" />
-          <stop offset="28%" stopColor={brand} stopOpacity="0.22" />
-          <stop offset="55%" stopColor={brand} stopOpacity="0.09" />
-          <stop offset="78%" stopColor={brand} stopOpacity="0.03" />
-          <stop offset="100%" stopColor={brand} stopOpacity="0" />
+          <stop offset="70%" stopColor={brand} stopOpacity="0" />
         </radialGradient>
         <clipPath id={clipId}>
-          <circle cx={CX} cy={CY} r={R + 10} />
+          <circle cx={CX} cy={CY} r={R + 8} />
         </clipPath>
       </defs>
 
-      {/* Layer 1 — gentle warm wash on stone (circular only) */}
-      <circle cx={CX} cy={CY} r={98} fill={`url(#${washId})`} />
+      {/* Outer soft wash on stone (champagne bloom) */}
+      <circle cx={CX} cy={CY} r={96} fill={`url(#${bloomOuterId})`} />
+      {/* Inner warm bloom */}
+      <circle cx={CX} cy={CY} r={72} fill={`url(#${bloomCoreId})`} />
 
-      {/* Layers 2–5 — neon tubes, scaled to leave room for wash */}
       <g
         transform={`translate(${CX}, ${CY}) scale(${markScale}) translate(${-CX}, ${-CY})`}
       >
         <g clipPath={`url(#${clipId})`}>
-          {/* Soft tube bloom */}
-          <PeaceRing stroke={brand} strokeWidth={26} opacity={0.18} />
-          <PeaceInternals stroke={brand} strokeWidth={26} opacity={0.18} />
-          <PeaceRing stroke={brand} strokeWidth={18} opacity={0.32} />
-          <PeaceInternals stroke={brand} strokeWidth={18} opacity={0.32} />
-
-          {/* Brand glass tube */}
-          <PeaceRing stroke={brand} strokeWidth={12} opacity={0.95} />
-          <PeaceInternals stroke={brand} strokeWidth={12} opacity={0.95} />
-
-          {/* Hot neon core */}
-          <PeaceRing stroke={core} strokeWidth={6.5} />
-          <PeaceInternals stroke={core} strokeWidth={6.5} />
-
-          {/* Filament highlight */}
-          <PeaceRing stroke="#FFFFFF" strokeWidth={2.2} opacity={0.78} />
-          <PeaceInternals stroke="#FFFFFF" strokeWidth={2.2} opacity={0.78} />
+          {/* Soft tube body — PeaceSignPreview stroke weight */}
+          <PeaceMark stroke={brand} strokeWidth={12} opacity={0.92} />
+          <PeaceMark stroke={core} strokeWidth={7} />
+          <PeaceMark stroke="#FFFFFF" strokeWidth={2.4} opacity={0.7} />
         </g>
       </g>
     </svg>
