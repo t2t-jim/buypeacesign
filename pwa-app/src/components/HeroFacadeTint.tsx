@@ -12,8 +12,8 @@ import {
  * Clean circular Logo A on the facade — exact brand hex.
  * Image-space anchor (building centerline + stone-panel mid).
  * Hard-clipped internals — no tails past the ring.
- * Luminosity via layered SVG strokes only (NO CSS filter / NO clip wrap —
- * those painted a square “box” on color change).
+ * Luminosity via layered SVG strokes only (no CSS filter).
+ * Circular clip-path on the SVG — kills rectangular gray compositing flash on hex change.
  */
 
 export type HeroFacadeTintProps = {
@@ -177,23 +177,20 @@ function TubeStack({
   core: string;
   clipId: string;
 }) {
+  // Everything inside circular clipPath — no square paint bounds / gray layer flash
   return (
-    <>
-      {/* Soft bloom as wide low-opacity strokes (no CSS filter = no square box) */}
-      <PeaceRing stroke={brand} strokeWidth={22} opacity={0.22} />
-      <PeaceRing stroke={brand} strokeWidth={17} opacity={0.4} />
-      <PeaceRing stroke={brand} strokeWidth={13} opacity={0.85} />
-      <PeaceRing stroke={core} strokeWidth={7} />
-      <PeaceRing stroke="#FFFFFF" strokeWidth={2.6} opacity={0.72} />
-
-      <g clipPath={`url(#${clipId})`}>
-        <PeaceInternals stroke={brand} strokeWidth={22} opacity={0.22} />
-        <PeaceInternals stroke={brand} strokeWidth={17} opacity={0.4} />
-        <PeaceInternals stroke={brand} strokeWidth={13} opacity={0.85} />
-        <PeaceInternals stroke={core} strokeWidth={7} />
-        <PeaceInternals stroke="#FFFFFF" strokeWidth={2.6} opacity={0.72} />
-      </g>
-    </>
+    <g clipPath={`url(#${clipId})`}>
+      <PeaceRing stroke={brand} strokeWidth={20} opacity={0.25} />
+      <PeaceRing stroke={brand} strokeWidth={15} opacity={0.45} />
+      <PeaceRing stroke={brand} strokeWidth={12} opacity={0.9} />
+      <PeaceRing stroke={core} strokeWidth={6.5} />
+      <PeaceRing stroke="#FFFFFF" strokeWidth={2.4} opacity={0.7} />
+      <PeaceInternals stroke={brand} strokeWidth={20} opacity={0.25} />
+      <PeaceInternals stroke={brand} strokeWidth={15} opacity={0.45} />
+      <PeaceInternals stroke={brand} strokeWidth={12} opacity={0.9} />
+      <PeaceInternals stroke={core} strokeWidth={6.5} />
+      <PeaceInternals stroke="#FFFFFF" strokeWidth={2.4} opacity={0.7} />
+    </g>
   );
 }
 
@@ -264,12 +261,20 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
     width: anchor.size,
     height: anchor.size,
     transform: "translate(-50%, -50%)",
-    opacity: anchor.ready ? 1 : 0,
+    // visibility (not opacity) — opacity promotes a square GPU layer that flashes gray
+    visibility: anchor.ready ? "visible" : "hidden",
     pointerEvents: "none",
-    // Explicitly no filter — avoids rectangular filter paint bounds on hex change
     filter: "none",
     background: "transparent",
-    overflow: "visible",
+    border: "none",
+    outline: "none",
+    boxShadow: "none",
+    // Mask any residual rectangular compositing bounds to a circle
+    clipPath: "circle(50%)",
+    // Safari
+    WebkitClipPath: "circle(50%)",
+    overflow: "hidden",
+    contain: "paint",
   };
 
   return (
@@ -283,8 +288,9 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
       style={style}
     >
       <defs>
+        {/* Slightly outside tube stroke so ring isn’t shaved; CSS circle(50%) kills square layer */}
         <clipPath id={clipId}>
-          <circle cx={CX} cy={CY} r={R} />
+          <circle cx={CX} cy={CY} r={R + 12} />
         </clipPath>
       </defs>
       <TubeStack brand={brand} core={core} clipId={clipId} />

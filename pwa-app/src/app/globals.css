@@ -840,15 +840,21 @@ input {
   z-index: 2;
 }
 
-/* Frameless mix-blend tint of the baked on-wall Logo A — stacked on same spot */
+/* Facade Logo A — image-space anchor, circular clip, SVG tube glow */
 /* Exact-hex Logo A — tube luminosity via inline CSS drop-shadow; wall stays clean */
 .estate-hero__facade-sign {
-  /* JS image-space anchor; no wrap, no CSS filter (those caused a color-change box) */
+  /* JS image-space anchor; circular clip only — never a square layer on color change */
   z-index: 1;
   pointer-events: none;
-  background: transparent;
-  overflow: visible;
-  filter: none;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  overflow: hidden;
+  border-radius: 50%;
+  -webkit-clip-path: circle(50%);
+  clip-path: circle(50%);
 }
 
 .estate-hero__content {
