@@ -12,7 +12,8 @@ import {
  * Clean circular Logo A on the facade — exact brand hex.
  * Positioned in *image space* via object-fit math against the hero <img>
  * (building centerline + mid of stone panel above the glass lintel).
- * Soft CSS drop-shadow tube glow only — no wall spill / SVG feFlood.
+ * Luminous neon tube look (bright core + same-hex bloom) — no wall spill plate,
+ * no SVG feFlood (WebKit-safe), no tails past the ring.
  */
 
 export type HeroFacadeTintProps = {
@@ -27,10 +28,10 @@ const SRC_H = 1024;
 /**
  * Anchor in source-image normalized coords (measured on the clean estate photo):
  * - X: building vertical centerline through glass mullion / stairs
- * - Y: geometric mid of main stone face (roof/stone start ~10.9% → glass lintel ~35.9%)
+ * - Y: geometric mid of main stone face (roof/stone ~10.9% → glass lintel ~35.9%)
  */
 const ANCHOR_X = 0.5;
-const ANCHOR_Y = 0.222; // stone mid with -9px live QA nudge (was geometric 0.2344)
+const ANCHOR_Y = (0.1094 + 0.3594) / 2; // ≈ 0.2344 — true stone-panel mid
 
 /** Logo diameter as a fraction of source image width. */
 const SIZE_FRAC = 0.115;
@@ -45,6 +46,19 @@ function normalizeHex(input: string): string {
   }
   if (!/^[0-9A-F]{6}$/.test(h)) return "#F6EBD1";
   return `#${h}`;
+}
+
+/** Mix brand toward white for a hot neon tube core (placement-shot look). */
+function tubeCoreHex(brand: string, towardWhite = 0.55): string {
+  const n = brand.slice(1);
+  const mix = (ch: string) => {
+    const v = Number.parseInt(ch, 16);
+    return Math.round(v + (255 - v) * towardWhite)
+      .toString(16)
+      .padStart(2, "0")
+      .toUpperCase();
+  };
+  return `#${mix(n.slice(0, 2))}${mix(n.slice(2, 4))}${mix(n.slice(4, 6))}`;
 }
 
 function parseObjectPosition(value: string): { x: number; y: number } {
@@ -87,8 +101,64 @@ type AnchorPos = {
   ready: boolean;
 };
 
+function PeaceMark({
+  stroke,
+  strokeWidth,
+  clipId,
+  opacity = 1,
+}: {
+  stroke: string;
+  strokeWidth: number;
+  clipId: string;
+  opacity?: number;
+}) {
+  return (
+    <g opacity={opacity}>
+      <circle
+        cx="100"
+        cy="100"
+        r="78"
+        fill="none"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="butt"
+      />
+      <g clipPath={`url(#${clipId})`}>
+        <line
+          x1="100"
+          y1="22"
+          x2="100"
+          y2="178"
+          stroke={stroke}
+          strokeWidth={strokeWidth}
+          strokeLinecap="butt"
+        />
+        <line
+          x1="100"
+          y1="100"
+          x2="48"
+          y2="168"
+          stroke={stroke}
+          strokeWidth={strokeWidth}
+          strokeLinecap="butt"
+        />
+        <line
+          x1="100"
+          y1="100"
+          x2="152"
+          y2="168"
+          stroke={stroke}
+          strokeWidth={strokeWidth}
+          strokeLinecap="butt"
+        />
+      </g>
+    </g>
+  );
+}
+
 export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
   const brand = normalizeHex(hex || "#F6EBD1");
+  const core = tubeCoreHex(brand, 0.58);
   const uid = useId().replace(/:/g, "");
   const clipId = `facade-peace-clip-${uid}`;
   const svgRef = useRef<SVGSVGElement>(null);
@@ -146,10 +216,14 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
     .filter(Boolean)
     .join(" ");
 
+  // Placement-shot luminosity: hot core + tight same-hex bloom (no cyan/purple plate)
   const tubeGlow = [
-    `drop-shadow(0 0 1.5px ${brand})`,
-    `drop-shadow(0 0 4px ${brand}cc)`,
-    `drop-shadow(0 0 10px ${brand}66)`,
+    `drop-shadow(0 0 1px ${core})`,
+    `drop-shadow(0 0 2px ${brand})`,
+    `drop-shadow(0 0 5px ${brand})`,
+    `drop-shadow(0 0 12px ${brand}ee)`,
+    `drop-shadow(0 0 22px ${brand}99)`,
+    `drop-shadow(0 0 36px ${brand}55)`,
   ].join(" ");
 
   const style: CSSProperties = {
@@ -180,44 +254,11 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
         </clipPath>
       </defs>
 
-      <circle
-        cx="100"
-        cy="100"
-        r="78"
-        fill="none"
-        stroke={brand}
-        strokeWidth="13"
-        strokeLinecap="butt"
-      />
-      <g clipPath={`url(#${clipId})`}>
-        <line
-          x1="100"
-          y1="22"
-          x2="100"
-          y2="178"
-          stroke={brand}
-          strokeWidth="13"
-          strokeLinecap="butt"
-        />
-        <line
-          x1="100"
-          y1="100"
-          x2="48"
-          y2="168"
-          stroke={brand}
-          strokeWidth="13"
-          strokeLinecap="butt"
-        />
-        <line
-          x1="100"
-          y1="100"
-          x2="152"
-          y2="168"
-          stroke={brand}
-          strokeWidth="13"
-          strokeLinecap="butt"
-        />
-      </g>
+      {/* Soft outer tube body (brand) */}
+      <PeaceMark stroke={brand} strokeWidth={15} clipId={clipId} opacity={0.92} />
+      {/* Hot neon core — matches garage/pool luminous tubes */}
+      <PeaceMark stroke={core} strokeWidth={8} clipId={clipId} />
+      <PeaceMark stroke="#FFFFFF" strokeWidth={3.2} clipId={clipId} opacity={0.75} />
     </svg>
   );
 }
