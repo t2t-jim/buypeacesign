@@ -27,7 +27,7 @@ const ANCHOR_Y = 0.212;
 
 const TUBE_FRAC = 0.12;
 /** Small pad so tight tube bloom isn’t clipped hard by circle(50%). */
-const BLOOM_PAD = 1.18;
+const BLOOM_PAD = 1.22;
 
 const CX = 100;
 const CY = 100;
@@ -155,8 +155,8 @@ function PeaceMark({
 
 export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
   const brand = normalizeHex(hex || "#F6EBD1");
-  const core = tubeCoreHex(brand, 0.5);
-  const hot = tubeCoreHex(brand, 0.7);
+  const core = tubeCoreHex(brand, 0.58);
+  const hot = tubeCoreHex(brand, 0.78);
   const uid = useId().replace(/:/g, "");
   const tubeBloomId = `facade-tube-bloom-${uid}`;
   const softTubeId = `facade-soft-tube-${uid}`;
@@ -259,7 +259,7 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
           height="170%"
           colorInterpolationFilters="sRGB"
         >
-          <feGaussianBlur in="SourceGraphic" stdDeviation="2.4" result="blur" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3.1" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
@@ -288,17 +288,18 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
         transform={`translate(${CX}, ${CY}) scale(${markScale}) translate(${-CX}, ${-CY})`}
       >
         {/* Tight same-hex bloom hugging the tubes */}
-        <g filter={`url(#${tubeBloomId})`} opacity={0.9}>
+        <g filter={`url(#${tubeBloomId})`} opacity={1}>
           <g clipPath={`url(#${clipId})`}>
-            <PeaceMark stroke={brand} strokeWidth={14} opacity={0.55} />
+            <PeaceMark stroke={brand} strokeWidth={16} opacity={0.72} />
+            <PeaceMark stroke={core} strokeWidth={10} opacity={0.45} />
           </g>
         </g>
 
         {/* Luminous glass tubing */}
         <g clipPath={`url(#${clipId})`} filter={`url(#${softTubeId})`}>
-          <PeaceMark stroke={brand} strokeWidth={11} opacity={0.92} />
-          <PeaceMark stroke={core} strokeWidth={6.5} opacity={0.95} />
-          <PeaceMark stroke={hot} strokeWidth={2.6} opacity={0.8} />
+          <PeaceMark stroke={brand} strokeWidth={12} opacity={0.96} />
+          <PeaceMark stroke={core} strokeWidth={7} opacity={1} />
+          <PeaceMark stroke={hot} strokeWidth={3} opacity={0.9} />
         </g>
       </g>
     </svg>
