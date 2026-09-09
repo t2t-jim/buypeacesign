@@ -158,6 +158,7 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
   const core = tubeCoreHex(brand, 0.68);
   const hot = tubeCoreHex(brand, 0.88);
   const uid = useId().replace(/:/g, "");
+  const tubeWashId = `facade-tube-wash-${uid}`;
   const tubeBloomId = `facade-tube-bloom-${uid}`;
   const softTubeId = `facade-soft-tube-${uid}`;
   const clipId = `facade-clip-${uid}`;
@@ -250,6 +251,17 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
       style={style}
     >
       <defs>
+        {/* Subtle wash that follows the tube paths — not a filled orb */}
+        <filter
+          id={tubeWashId}
+          x="-50%"
+          y="-50%"
+          width="200%"
+          height="200%"
+          colorInterpolationFilters="sRGB"
+        >
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6.2" result="wash" />
+        </filter>
         {/* Tight bloom ON the tube paths only — not a wall disc */}
         <filter
           id={tubeBloomId}
@@ -287,6 +299,17 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
       <g
         transform={`translate(${CX}, ${CY}) scale(${markScale}) translate(${-CX}, ${-CY})`}
       >
+        {/* Tight warm wash along the tubes only — not a circular orb */}
+        <g
+          filter={`url(#${tubeWashId})`}
+          opacity={0.55}
+          style={{ mixBlendMode: "soft-light" }}
+        >
+          <g clipPath={`url(#${clipId})`}>
+            <PeaceMark stroke={brand} strokeWidth={26} opacity={0.85} />
+          </g>
+        </g>
+
         {/* Placement-shot luminosity: bloom follows the tubes, not a wall disc */}
         <g
           filter={`url(#${tubeBloomId})`}
