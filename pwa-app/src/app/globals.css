@@ -811,18 +811,17 @@ input {
   background: #07080f;
 }
 
-/* Shared zoom — image + Logo A move together on the facade */
+/* No extra zoom — scale(0.78) letterboxed the photo and shoved the sign to the top */
 .estate-hero__photo {
   position: absolute;
   inset: 0;
-  transform: scale(0.78);
-  transform-origin: center 34%;
+  transform: none;
 }
 
 .estate-hero__img {
-  /* Between mid cover and far 0.62 — slight pullback, still cover-based for iPhone */
+  /* Bias toward the sky/roofline so the stone panel + sky above the sign stay in frame */
   object-fit: cover;
-  object-position: center 36%;
+  object-position: center 8%;
 }
 
 .estate-hero__veil {
@@ -1045,7 +1044,7 @@ input {
     min-height: min(88dvh, 820px);
   }
   .estate-hero__img {
-    object-position: center 36%;
+    object-position: center 8%;
   }
   .estate-hero__content {
     max-width: 400px;
@@ -1075,7 +1074,7 @@ input {
     min-height: min(78dvh, 680px);
   }
   .estate-hero__img {
-    object-position: center 32%;
+    object-position: center 10%;
   }
   .estate-hero__content {
     padding-bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
