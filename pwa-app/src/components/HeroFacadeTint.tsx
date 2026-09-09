@@ -27,7 +27,7 @@ const ANCHOR_Y = 0.212;
 
 const TUBE_FRAC = 0.12;
 /** Small pad so tight tube bloom isn’t clipped hard by circle(50%). */
-const BLOOM_PAD = 1.22;
+const BLOOM_PAD = 1.28;
 
 const CX = 100;
 const CY = 100;
@@ -155,8 +155,8 @@ function PeaceMark({
 
 export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
   const brand = normalizeHex(hex || "#F6EBD1");
-  const core = tubeCoreHex(brand, 0.58);
-  const hot = tubeCoreHex(brand, 0.78);
+  const core = tubeCoreHex(brand, 0.68);
+  const hot = tubeCoreHex(brand, 0.88);
   const uid = useId().replace(/:/g, "");
   const tubeBloomId = `facade-tube-bloom-${uid}`;
   const softTubeId = `facade-soft-tube-${uid}`;
@@ -253,16 +253,16 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
         {/* Tight bloom ON the tube paths only — not a wall disc */}
         <filter
           id={tubeBloomId}
-          x="-35%"
-          y="-35%"
-          width="170%"
-          height="170%"
+          x="-40%"
+          y="-40%"
+          width="180%"
+          height="180%"
           colorInterpolationFilters="sRGB"
         >
-          <feGaussianBlur in="SourceGraphic" stdDeviation="3.1" result="blur" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="4.4" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
+            <feMergeNode in="blur" />
           </feMerge>
         </filter>
         <filter
@@ -287,19 +287,23 @@ export function HeroFacadeTint({ hex, className }: HeroFacadeTintProps) {
       <g
         transform={`translate(${CX}, ${CY}) scale(${markScale}) translate(${-CX}, ${-CY})`}
       >
-        {/* Tight same-hex bloom hugging the tubes */}
-        <g filter={`url(#${tubeBloomId})`} opacity={1}>
+        {/* Placement-shot luminosity: bloom follows the tubes, not a wall disc */}
+        <g
+          filter={`url(#${tubeBloomId})`}
+          opacity={1}
+          style={{ mixBlendMode: "screen" }}
+        >
           <g clipPath={`url(#${clipId})`}>
-            <PeaceMark stroke={brand} strokeWidth={16} opacity={0.72} />
-            <PeaceMark stroke={core} strokeWidth={10} opacity={0.45} />
+            <PeaceMark stroke={brand} strokeWidth={20} opacity={0.95} />
+            <PeaceMark stroke={core} strokeWidth={13} opacity={0.7} />
           </g>
         </g>
 
-        {/* Luminous glass tubing */}
+        {/* Luminous glass tubing — hot core like garage/pool shots */}
         <g clipPath={`url(#${clipId})`} filter={`url(#${softTubeId})`}>
-          <PeaceMark stroke={brand} strokeWidth={12} opacity={0.96} />
-          <PeaceMark stroke={core} strokeWidth={7} opacity={1} />
-          <PeaceMark stroke={hot} strokeWidth={3} opacity={0.9} />
+          <PeaceMark stroke={brand} strokeWidth={13} opacity={1} />
+          <PeaceMark stroke={core} strokeWidth={8} opacity={1} />
+          <PeaceMark stroke={hot} strokeWidth={3.6} opacity={0.95} />
         </g>
       </g>
     </svg>
